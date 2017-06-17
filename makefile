@@ -2,7 +2,7 @@
 # @auth: Zulkarnaen
 
 # Binary name
-PROJECT = cam-tracking
+PROJECT = camera_tracking
 BIN = $(PROJECT).bin
 
 # Specify source directory and object directory
@@ -18,7 +18,7 @@ SRC = $(wildcard *.c)
 DEP = $(wildcard *.h)
 
 # Target O files, at OBJDIR
-_OBJ = $(patsubst %.cc, %.o, $(SRC))
+_OBJ = $(patsubst %.c, %.o, $(SRC))
 OBJ = $(patsubst %, $(OBJDIR)/%, $(_OBJ))
 
 # Main Rule
@@ -30,7 +30,7 @@ $(BIN): $(OBJ)
 	ctags -R
 
 # Rule for OBJECT
-$(OBJDIR)/%.o: %.cc $(DEPS) | $(OBJDIR)
+$(OBJDIR)/%.o: %.c $(DEPS) | $(OBJDIR)
 	gcc -c -g $< -o $@ $(LDLIBS)
 
 # Create OBJDIR if not exist
