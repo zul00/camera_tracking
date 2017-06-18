@@ -6,6 +6,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <string.h>
+#include <inttypes.h>
 
 #include "libuart.h"
 
@@ -14,6 +16,9 @@ int main(int argc, char *argv[])
   char *rx_str = NULL;
   int16_t rx_size = 0;
   int16_t stat = 0;
+
+  int16_t encPan, encTilt = 0;
+  char *token;
 
   printf("Hello Camera Tracking!!!\n");
 
@@ -25,17 +30,29 @@ int main(int argc, char *argv[])
   else
   {printf("UART configured\n");}
 
-  rx_str = malloc(100 * sizeof(rx_str));
+  rx_str = malloc(20 * sizeof(rx_str));
 
   uart_transmit("Hello from Serial\n");
 
   for(;;)
   {
+    // Receive UART
     rx_size = uart_receive(&rx_str);
-
     if (rx_size > 0)
+    {
       printf("Received %u char \n=> %s\n", rx_size, rx_str);
-    usleep(1000);
+
+      /* Parsing */
+      // First token
+      token = strtok(rx_str, ";");
+      encPan = strtoimax(token, NULL, 10);
+      printf("token 1 = %s; %d\n", token, encPan);
+      // Next token(s)
+      token = strtok(NULL, ";");
+      encTilt = strtoimax(token, NULL, 10);
+      printf("token 2 = %s; %d\n", token, encTilt);
+    }
+    usleep(500000);
   }
 
   return 0;

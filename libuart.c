@@ -81,7 +81,7 @@ int16_t uart_receive(char **str)
   /* Reset buffer */
   memset(uart_rx_buffer, 0, UART_RX_BUF_SIZE);                                    
 
-  /* Dump stream to buffer */
+  /* Dump stream to buffer while new line not found */
   do 
   {
     // Read one char
@@ -97,8 +97,10 @@ int16_t uart_receive(char **str)
     }
   } while (uart_rx_buffer[ctr++] != '\n');
 
+  // Remove '\n'
+  uart_rx_buffer[--ctr] = 0;
   // Pass pointer
-  *str = uart_rx_buffer;                                                          
+  *str = uart_rx_buffer;
 
   return ctr;
 }                
