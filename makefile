@@ -8,7 +8,8 @@ BIN = $(PROJECT).bin
 # Specify source directory and object directory
 OBJDIR = obj
 
-# Specify library
+# Specify libraries and flags
+LIBS   = -lm
 CFLAGS = -Wall -Wextra -g
 
 # List C files
@@ -26,12 +27,12 @@ all: $(BIN)
 
 # Rule for BINARY
 $(BIN): $(OBJ)
-	gcc -o $(BIN) $(OBJ) $(CFLAGS) 	
+	gcc -o $(BIN) $(OBJ) $(CFLAGS) $(LIBS)
 	ctags -R
 
 # Rule for OBJECT
 $(OBJDIR)/%.o: %.c $(DEPS) | $(OBJDIR)
-	gcc -c -g $< -o $@ $(LDLIBS)
+	gcc -c -g $< -o $@
 
 # Create OBJDIR if not exist
 $(OBJDIR):
