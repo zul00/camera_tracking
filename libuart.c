@@ -10,8 +10,8 @@
 
 #define DEV_PATH  "/dev/ttyO0"
 #define BAUDRATE  B115200
-#define UART_TX_BUF_SIZE  100
-#define UART_RX_BUF_SIZE  100
+#define UART_TX_BUF_SIZE  20
+#define UART_RX_BUF_SIZE  20
 
 int16_t fd = 0;
 
@@ -74,15 +74,31 @@ void uart_transmit(char *format, ...)
  */                                                                             
 int16_t uart_receive(char **str)                                                  
 {                                                                               
-  uint16_t len = 0;                                                             
+  char c = 0;
+  uint16_t ctr = 0;                                                             
   ssize_t len_read = 0;                                                         
 
+  /* Reset buffer */
   memset(uart_rx_buffer, 0, UART_RX_BUF_SIZE);                                    
 
-  len_read = read(fd, uart_rx_buffer, 4);                                         
-  len = strlen(uart_rx_buffer);                                                   
+  /* Dump stream to buffer */
+  do 
+  {
+    // Read one char
+    len_read = read(fd, &c, 1);                                         
 
+    if (len_read != 0)                // Char found
+    {
+      if (ctr > UART_TX_BUF_SIZE - 1)
+      { // Buffer overflow
+        return -1;
+      }
+      uart_rx_buffer[ctr] = c;      // Append char
+    }
+  } while (uart_rx_buffer[ctr++] != '\n');
+
+  // Pass pointer
   *str = uart_rx_buffer;                                                          
 
-  return len;                                                                   
+  return ctr;
 }                

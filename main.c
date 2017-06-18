@@ -5,13 +5,14 @@
  */
 #include <stdlib.h>
 #include <stdio.h>
+#include <unistd.h>
 
 #include "libuart.h"
 
 int main(int argc, char *argv[])
 {
   char *rx_str = NULL;
-  uint8_t rx_size = 0;
+  int16_t rx_size = 0;
   int16_t stat = 0;
 
   printf("Hello Camera Tracking!!!\n");
@@ -32,7 +33,9 @@ int main(int argc, char *argv[])
   {
     rx_size = uart_receive(&rx_str);
 
-    printf("Received %u char \n=> %s\n", rx_size, rx_str);
+    if (rx_size > 0)
+      printf("Received %u char \n=> %s\n", rx_size, rx_str);
+    usleep(1000);
   }
 
   return 0;
