@@ -19,7 +19,7 @@ char uart_tx_buffer[UART_TX_BUF_SIZE];
 char uart_rx_buffer[UART_RX_BUF_SIZE];
 
 /**                                                                             
- * @brief Configure UART communication                   
+ * @brief  Configure UART communication                   
  * @retval None                                                                 
  */                                                                             
 int16_t uart_config(void)                                                      
@@ -27,7 +27,7 @@ int16_t uart_config(void)
   struct termios newtio;
 
   fd = open(DEV_PATH, O_RDWR | O_NOCTTY | O_NONBLOCK);                       
-  if (fd <0) {perror(DEV_PATH); exit(-1); }                                  
+  if (fd < 0) {perror("Opening " DEV_PATH); return -1; }                                  
 
   bzero(&newtio, sizeof(newtio));                                               
   newtio.c_cflag = BAUDRATE | CRTSCTS | CS8 | CLOCAL | CREAD;                   
@@ -49,7 +49,7 @@ int16_t uart_config(void)
 
 /**                                                                             
  * @brief     Transmit string via UART
- * @param[in] format  String format                             
+ * @param[in] format  Pointer to string format                             
  * @retval    None                                                                
  */                                                                             
 void uart_transmit(char *format, ...)                                             
@@ -69,7 +69,7 @@ void uart_transmit(char *format, ...)
 
 /**                                                                             
  * @brief     Receive string via UART                                                  
- * @param[in] format Received string                            
+ * @param[in] format Double pointer to received string                            
  * @retval                                                                  
  */                                                                             
 int16_t uart_receive(char **str)                                                  
