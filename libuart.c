@@ -94,8 +94,20 @@ int16_t uart_receive(char **str)
         return -1;
       }
       uart_rx_buffer[ctr] = c;      // Append char
+      ctr++;
     }
-  } while (uart_rx_buffer[ctr++] != '\n');
+
+    // Check last char
+    if (ctr != 0) 
+    {
+      if (uart_rx_buffer[ctr-1] == '\n')
+      {
+        break;
+      }
+    }
+  } while (1);
+
+  printf("In %s\n", uart_rx_buffer);
 
   // Remove '\n'
   uart_rx_buffer[--ctr] = 0;

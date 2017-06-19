@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
     rx_size = uart_receive(&rx_str);
     if (rx_size > 0)
     {
-      printf("Received %u char \n=> %s\n", rx_size, rx_str);
+      printf("Out %d => %s\n", rx_size, rx_str);
 
       /* Parsing */
       // First token
@@ -52,7 +52,6 @@ int main(int argc, char *argv[])
       encTilt = strtoimax(token, NULL, 10);
       printf("token 2 = %s; %d\n", token, encTilt);
     }
-    usleep(500000);
   }
 
   return 0;

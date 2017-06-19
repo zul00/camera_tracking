@@ -26,12 +26,12 @@ all: $(BIN)
 
 # Rule for BINARY
 $(BIN): $(OBJ)
-	gcc -o $(BIN) $(OBJ) $(CFLAGS) 	
-	ctags -R
+	arm-linux-gnueabi-gcc -o $(BIN) $(OBJ) $(CFLAGS) 	
+	#ctags -R
 
 # Rule for OBJECT
 $(OBJDIR)/%.o: %.c $(DEPS) | $(OBJDIR)
-	gcc -c -g $< -o $@ $(LDLIBS)
+	arm-linux-gnueabi-gcc -c -g $< -o $@ $(LDLIBS)
 
 # Create OBJDIR if not exist
 $(OBJDIR):
