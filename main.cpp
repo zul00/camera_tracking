@@ -2,6 +2,10 @@
  * @file  main.c
  * @brief Control two joint JIWY module
  *
+ * OpenCV reference:
+ * https://www.youtube.com/watch?v=bSeFrPrqZ2A
+ * by Kyle Hounslow
+ *
  */
 #include <stdlib.h>
 #include <stdio.h>
