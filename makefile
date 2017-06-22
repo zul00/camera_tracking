@@ -11,19 +11,19 @@ OBJDIR = obj
 # Compiler
 #CROSS_COMPILER = arm-linux-gnueabi-gcc
 #CC = $(CROSS_COMPILER)gcc
-CC = gcc
+CC = g++
 
 # Specify library
 CFLAGS = -Wall -Wextra -g
 
 # List C files
-SRC = $(wildcard *.c)
+SRC = $(wildcard *.cpp)
 
 # List dependencies
 DEP = $(wildcard *.h)
 
 # Target O files, at OBJDIR
-_OBJ = $(patsubst %.c, %.o, $(SRC))
+_OBJ = $(patsubst %.cpp, %.o, $(SRC))
 OBJ = $(patsubst %, $(OBJDIR)/%, $(_OBJ))
 
 # Main Rule
@@ -35,12 +35,16 @@ $(BIN): $(OBJ)
 	#ctags -R
 
 # Rule for OBJECT
-$(OBJDIR)/%.o: %.c $(DEPS) | $(OBJDIR)
+$(OBJDIR)/%.o: %.cpp $(DEPS) | $(OBJDIR)
 	$(CC) -c -g $< -o $@ $(LDLIBS)
 
 # Create OBJDIR if not exist
 $(OBJDIR):
 	mkdir $(OBJDIR)
+
+.PHONY: run
+run: $(BIN)
+	./$(BIN)
 
 .PHONY: clean
 clean:
