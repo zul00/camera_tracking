@@ -20,15 +20,15 @@ using namespace cv;
 using namespace std;
 
 // HSV Filter value
-int H_MIN = 0;
-int H_MAX = 256;
-int S_MIN = 0;
-int S_MAX = 256;
-int V_MIN = 0;
-int V_MAX = 256;
+int H_MIN = 51;
+int H_MAX = 94;
+int S_MIN = 66;
+int S_MAX = 175;
+int V_MIN = 77;
+int V_MAX = 204;
 
-const int FRAME_WIDTH = 160;
-const int FRAME_HEIGHT = 120;
+const int FRAME_WIDTH = 640;
+const int FRAME_HEIGHT = 480;
 
 const string windowName = "Original Image";
 const string windowName1 = "HSV Image";
@@ -42,12 +42,12 @@ const string trackbarWindowName = "Trackbars";
 void createTrackbars()
 {
   namedWindow(trackbarWindowName,0);
-  createTrackbar( "H_MIN", trackbarWindowName, &H_MIN, H_MAX, NULL);
-  createTrackbar( "H_MAX", trackbarWindowName, &H_MAX, H_MAX, NULL);
-  createTrackbar( "S_MIN", trackbarWindowName, &S_MIN, S_MAX, NULL);
-  createTrackbar( "S_MAX", trackbarWindowName, &S_MAX, S_MAX, NULL);
-  createTrackbar( "V_MIN", trackbarWindowName, &V_MIN, V_MAX, NULL);
-  createTrackbar( "V_MAX", trackbarWindowName, &V_MAX, V_MAX, NULL);
+  createTrackbar( "H_MIN", trackbarWindowName, &H_MIN, 256, NULL);
+  createTrackbar( "H_MAX", trackbarWindowName, &H_MAX, 256, NULL);
+  createTrackbar( "S_MIN", trackbarWindowName, &S_MIN, 256, NULL);
+  createTrackbar( "S_MAX", trackbarWindowName, &S_MAX, 256, NULL);
+  createTrackbar( "V_MIN", trackbarWindowName, &V_MIN, 256, NULL);
+  createTrackbar( "V_MAX", trackbarWindowName, &V_MAX, 256, NULL);
 }
 
 int main(int argc, char *argv[])
@@ -76,7 +76,12 @@ int main(int argc, char *argv[])
     cap.read(im);
     if(!im.empty())
     {
-      imshow("Image", im);
+      cvtColor(im,imHSV,COLOR_BGR2HSV);
+      inRange(imHSV,Scalar(H_MIN,S_MIN,V_MIN),Scalar(H_MAX,S_MAX,V_MAX),imBin);
+
+      imshow(windowName,im);
+      imshow(windowName1,imHSV);
+      imshow(windowName2,imBin);
     }
     b = getTickCount();
 
