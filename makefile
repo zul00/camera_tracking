@@ -8,6 +8,11 @@ BIN = $(PROJECT).bin
 # Specify source directory and object directory
 OBJDIR = obj
 
+# Compiler
+#CROSS_COMPILER = arm-linux-gnueabi-gcc
+#CC = $(CROSS_COMPILER)gcc
+CC = gcc
+
 # Specify library
 CFLAGS = -Wall -Wextra -g
 
@@ -26,12 +31,12 @@ all: $(BIN)
 
 # Rule for BINARY
 $(BIN): $(OBJ)
-	arm-linux-gnueabi-gcc -o $(BIN) $(OBJ) $(CFLAGS) 	
+	$(CC) -o $(BIN) $(OBJ) $(CFLAGS) 	
 	#ctags -R
 
 # Rule for OBJECT
 $(OBJDIR)/%.o: %.c $(DEPS) | $(OBJDIR)
-	arm-linux-gnueabi-gcc -c -g $< -o $@ $(LDLIBS)
+	$(CC) -c -g $< -o $@ $(LDLIBS)
 
 # Create OBJDIR if not exist
 $(OBJDIR):
