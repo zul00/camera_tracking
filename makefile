@@ -14,13 +14,14 @@ OBJDIR = obj
 CC = g++
 
 # Specify library
-CFLAGS = -Wall -Wextra -g
+CFLAGS += -c -Wall -Wextra $(shell pkg-config --cflags opencv)
+LDFLAGS += $(shell pkg-config --libs --static opencv)
 
 # List C files
 SRC = $(wildcard *.cpp)
 
 # List dependencies
-DEP = $(wildcard *.h)
+DEP = $(wildcard *.hpp)
 
 # Target O files, at OBJDIR
 _OBJ = $(patsubst %.cpp, %.o, $(SRC))
@@ -31,12 +32,12 @@ all: $(BIN)
 
 # Rule for BINARY
 $(BIN): $(OBJ)
-	$(CC) -o $(BIN) $(OBJ) $(CFLAGS) 	
-	#ctags -R
+	$(CC) -o $(BIN) $(OBJ) $(LDFLAGS)
+	ctags -R
 
 # Rule for OBJECT
 $(OBJDIR)/%.o: %.cpp $(DEPS) | $(OBJDIR)
-	$(CC) -c -g $< -o $@ $(LDLIBS)
+	$(CC) -c -g $< -o $@ $(CFLAGS)
 
 # Create OBJDIR if not exist
 $(OBJDIR):
