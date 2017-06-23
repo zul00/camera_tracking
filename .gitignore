@@ -5,6 +5,7 @@
 *.fun
 *.map
 *.nc
+*.png
 *.ramfile
 *.swo
 *.swp

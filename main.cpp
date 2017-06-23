@@ -16,16 +16,11 @@
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
 
+#include "vision.hpp"
+
 using namespace cv;
 using namespace std;
 
-// HSV Filter value
-int H_MIN = 51;
-int H_MAX = 94;
-int S_MIN = 66;
-int S_MAX = 175;
-int V_MIN = 77;
-int V_MAX = 204;
 
 const int FRAME_WIDTH = 320;
 const int FRAME_HEIGHT = 240;
@@ -36,25 +31,7 @@ const int MIN_OBJECT_AREA = 20*20;
 const int MAX_OBJECT_AREA = FRAME_HEIGHT*FRAME_WIDTH/1.5;
 
 
-const string windowName = "Original Image";
-const string windowName1 = "HSV Image";
-const string windowName2 = "Thresholded Image";
-const string windowName3 = "After Morphological Operations";
-const string trackbarWindowName = "Trackbars";
 
-/**
- * @brief Create trackbars to configure HSV filter value
- */
-void createTrackbars()
-{
-  namedWindow(trackbarWindowName,0);
-  createTrackbar( "H_MIN", trackbarWindowName, &H_MIN, 256, NULL);
-  createTrackbar( "H_MAX", trackbarWindowName, &H_MAX, 256, NULL);
-  createTrackbar( "S_MIN", trackbarWindowName, &S_MIN, 256, NULL);
-  createTrackbar( "S_MAX", trackbarWindowName, &S_MAX, 256, NULL);
-  createTrackbar( "V_MIN", trackbarWindowName, &V_MIN, 256, NULL);
-  createTrackbar( "V_MAX", trackbarWindowName, &V_MAX, 256, NULL);
-}
 
 
 /**
@@ -101,9 +78,6 @@ void drawObject(int x, int y,Mat &frame)
   else line(frame,Point(x,y),Point(FRAME_WIDTH,y),Scalar(0,255,0),2);
 
  // putText(frame,intToString(x)+","+intToString(y),Point(x,y+30),1,1,Scalar(0,255,0),2);
-
-  dilate(in,out,dilateElement);
-  dilate(in,out,dilateElement);
 }
 
 
