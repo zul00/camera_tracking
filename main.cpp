@@ -7,9 +7,6 @@
  * by Kyle Hounslow
  *
  */
-#include <stdlib.h>
-#include <stdio.h>
-#include <unistd.h>
 #include <iostream>
 
 #include <opencv2/core.hpp>
@@ -21,16 +18,6 @@
 using namespace cv;
 using namespace std;
 
-
-const int FRAME_WIDTH = 320;
-const int FRAME_HEIGHT = 240;
-
-const int MAX_NUM_OBJECTS=50;
-
-const int MIN_OBJECT_AREA = 20*20;
-const int MAX_OBJECT_AREA = FRAME_HEIGHT*FRAME_WIDTH/1.5;
-
-
 int main(int argc, char *argv[])
 {
   Mat im, imHSV, imBin, imThresholded;
@@ -39,22 +26,17 @@ int main(int argc, char *argv[])
   int x=0, y=0;
 
   /* Initialize */
-  createTrackbars();
-  // Initialize camera
-  cap.open(1);
-  if(!cap.isOpened())
+  if (visionConfig(cap) != 0)
   {
-    printf("Failed to open camera\n");
+    exit(-1);
   }
-  cap.set(CV_CAP_PROP_FRAME_WIDTH, FRAME_WIDTH);
-  cap.set(CV_CAP_PROP_FRAME_HEIGHT, FRAME_HEIGHT);
 
   printf("Hello cpp\n");
 
   for(;;)
   {
+    /* Vision Process */
     a = getTickCount();
-
     cap.read(im);
     if(!im.empty())
     {

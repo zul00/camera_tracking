@@ -7,6 +7,7 @@ void createTrackbars();
 void drawObject(int x, int y, cv::Mat &frame);
 void morphOps(cv::Mat &in, cv::Mat &out);
 void trackFilteredObject(int &x, int &y, cv::Mat threshold, cv::Mat &cameraFeed);
+int16_t visionConfig(cv::VideoCapture &cap);
 
 
 extern const std::string windowName;
@@ -22,5 +23,8 @@ extern int S_MIN;
 extern int S_MAX;
 extern int V_MIN;
 extern int V_MAX;
+
+extern const int FRAME_WIDTH;
+extern const int FRAME_HEIGHT;
 
 #endif
