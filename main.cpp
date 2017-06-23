@@ -27,8 +27,8 @@ int S_MAX = 175;
 int V_MIN = 77;
 int V_MAX = 204;
 
-const int FRAME_WIDTH = 640;
-const int FRAME_HEIGHT = 480;
+const int FRAME_WIDTH = 160;
+const int FRAME_HEIGHT = 120;
 
 const string windowName = "Original Image";
 const string windowName1 = "HSV Image";
@@ -50,9 +50,29 @@ void createTrackbars()
   createTrackbar( "V_MAX", trackbarWindowName, &V_MAX, 256, NULL);
 }
 
+
+/**
+ * @brief Get binary map
+ */
+void morphOps(Mat &in, Mat &out){
+
+  //create structuring element that will be used to "dilate" and "erode" image.
+  //the element chosen here is a 3px by 3px rectangle
+
+  Mat erodeElement = getStructuringElement( MORPH_RECT,Size(3,3));
+  Mat dilateElement = getStructuringElement( MORPH_RECT,Size(8,8));
+
+  erode(in,out,erodeElement);
+  erode(in,out,erodeElement);
+
+
+  dilate(in,out,dilateElement);
+  dilate(in,out,dilateElement);
+}
+
 int main(int argc, char *argv[])
 {
-  Mat im, imHSV, imBin;
+  Mat im, imHSV, imBin, imThresholded;
   VideoCapture cap;
   int32_t a = 0, b = 0;
 
@@ -78,10 +98,12 @@ int main(int argc, char *argv[])
     {
       cvtColor(im,imHSV,COLOR_BGR2HSV);
       inRange(imHSV,Scalar(H_MIN,S_MIN,V_MIN),Scalar(H_MAX,S_MAX,V_MAX),imBin);
+      morphOps(imBin, imThresholded);
 
       imshow(windowName,im);
       imshow(windowName1,imHSV);
       imshow(windowName2,imBin);
+      imshow(windowName3,imThresholded);
     }
     b = getTickCount();
 
