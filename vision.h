@@ -8,7 +8,7 @@
 //void drawObject(int x, int y, cv::Mat &frame);
 //void morphOps(cv::Mat &in, cv::Mat &out);
 //void trackFilteredObject(int &x, int &y, cv::Mat threshold, cv::Mat &cameraFeed);
-int16_t visionConfig(CvCapture *cap);
+int16_t visionConfig(CvCapture **cap);
 
 
 //extern const std::string windowName;

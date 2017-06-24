@@ -1,6 +1,10 @@
+#include <stdlib.h>
+#include <stdio.h>
+
 #include <opencv2/core/fast_math.hpp>   // Must check in other platform
 #include <opencv2/core/core_c.h>
 #include <opencv2/videoio/videoio_c.h>
+#include <opencv2/highgui/highgui_c.h>
 
 #include "vision.h"
 
@@ -33,18 +37,20 @@ int V_MAX = 204;
 /**
  * @brief Configure vision
  */
-int16_t visionConfig(CvCapture *cap)
+int16_t visionConfig(CvCapture **cap)
 {
   //createTrackbars();
 
-  // Initialize camera
-//  cap.open(1);
-//  if(!cap.isOpened())
-//  {
-//    printf("Failed to open camera\n");
-//    return -1;
-//  }
-//
+  // Open camera
+  *cap = cvCaptureFromCAM(1);
+  // Window for LiveFeed
+  cvNamedWindow("LiveFeed", CV_WINDOW_AUTOSIZE);
+  if(!*cap)
+  {
+    perror("Capture is NULL");
+    return 1;
+  }
+  
 //  cap.set(CV_CAP_PROP_FRAME_WIDTH, FRAME_WIDTH);
 //  cap.set(CV_CAP_PROP_FRAME_HEIGHT, FRAME_HEIGHT);
 

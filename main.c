@@ -15,29 +15,27 @@
 #include <opencv2/videoio/videoio_c.h>
 #include <opencv2/highgui/highgui_c.h>
 
-//#include "vision.hpp"
+#include "vision.h"
 
 int main(int argc, char *argv[])
 {
   CvMat im;
-  CvCapture *cap;   // Store camera
+  CvCapture **cap;   // Store camera
   IplImage *frame;  // store frame
 
   printf("Welcoming OpenCV to C!!!\n");
 
-  // Open camera
-  cap = cvCaptureFromCAM(1);
-  // Window for LiveFeed
-  cvNamedWindow("LiveFeed", CV_WINDOW_AUTOSIZE);
-  if(!cap)
+  /* Initialize */
+  cap = malloc(sizeof(CvCapture*));
+  if (visionConfig(cap) != 0)
   {
-    perror("Capture is NULL");
+    exit(-1);
   }
 
   for(;;)
   {
     // Load next frame
-    frame=cvQueryFrame(cap);
+    frame=cvQueryFrame(*cap);
     if(!frame)
       break;
 
@@ -51,8 +49,9 @@ int main(int argc, char *argv[])
   }
 
   // CleanUp
-  cvReleaseCapture(&cap);
+  cvReleaseCapture(cap);
   cvDestroyAllWindows();
+  free(cap);
 
 //  Mat im, imHSV, imBin, imThresholded;
 //  VideoCapture cap;
