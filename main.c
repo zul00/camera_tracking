@@ -13,19 +13,46 @@
 #include <opencv2/core/fast_math.hpp>   // Must check in other platform
 #include <opencv2/core/core_c.h>
 #include <opencv2/videoio/videoio_c.h>
+#include <opencv2/highgui/highgui_c.h>
 
 //#include "vision.hpp"
 
-//using namespace cv;
-//using namespace std;
-
 int main(int argc, char *argv[])
 {
+  CvMat im;
+  CvCapture *cap;   // Store camera
+  IplImage *frame;  // store frame
+
   printf("Welcoming OpenCV to C!!!\n");
 
-  CvMat im;
+  // Open camera
+  cap = cvCaptureFromCAM(1);
+  // Window for LiveFeed
+  cvNamedWindow("LiveFeed", CV_WINDOW_AUTOSIZE);
+  if(!cap)
+  {
+    perror("Capture is NULL");
+  }
 
-  CvCapture *cap;
+  for(;;)
+  {
+    // Load next frame
+    frame=cvQueryFrame(cap);
+    if(!frame)
+      break;
+
+    // Show present frame
+    cvShowImage("LiveFeed", frame);
+
+    // Escape sequence
+    char c=cvWaitKey(33);
+    if(c==27)
+      break;
+  }
+
+  // CleanUp
+  cvReleaseCapture(&cap);
+  cvDestroyAllWindows();
 
 //  Mat im, imHSV, imBin, imThresholded;
 //  VideoCapture cap;
