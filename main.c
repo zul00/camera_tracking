@@ -12,6 +12,7 @@
 
 #include <opencv2/core/fast_math.hpp>   // Must check in other platform
 #include <opencv2/core/core_c.h>
+#include <opencv2/videoio/videoio_c.h>
 
 //#include "vision.hpp"
 
@@ -21,6 +22,10 @@
 int main(int argc, char *argv[])
 {
   printf("Welcoming OpenCV to C!!!\n");
+
+  CvMat im;
+
+  CvCapture *cap;
 
 //  Mat im, imHSV, imBin, imThresholded;
 //  VideoCapture cap;
