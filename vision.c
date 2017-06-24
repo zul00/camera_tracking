@@ -15,7 +15,7 @@
 //const string windowName1 = "HSV Image";
 //const string windowName2 = "Thresholded Image";
 //const string windowName3 = "After Morphological Operations";
-//const string trackbarWindowName = "Trackbars";
+const char* trackbarWindowName = "Trackbars";
 
 // HSV Filter value
 int H_MIN = 51;
@@ -35,14 +35,33 @@ int V_MAX = 204;
 #define MAX_OBJECT_AREA  FRAME_HEIGHT*FRAME_WIDTH/1.5
 
 /**
+ * @brief Create trackbars to configure HSV filter value
+ */
+void createTrackbars()
+{
+  cvNamedWindow(trackbarWindowName,0);
+  cvCreateTrackbar( "H_MIN", trackbarWindowName, &H_MIN, 256, NULL);
+  cvCreateTrackbar( "H_MAX", trackbarWindowName, &H_MAX, 256, NULL);
+  cvCreateTrackbar( "S_MIN", trackbarWindowName, &S_MIN, 256, NULL);
+  cvCreateTrackbar( "S_MAX", trackbarWindowName, &S_MAX, 256, NULL);
+  cvCreateTrackbar( "V_MIN", trackbarWindowName, &V_MIN, 256, NULL);
+  cvCreateTrackbar( "V_MAX", trackbarWindowName, &V_MAX, 256, NULL);
+}
+
+/**
  * @brief Configure vision
  */
 int16_t visionConfig(CvCapture **cap)
 {
-  //createTrackbars();
+  createTrackbars();
 
   // Open camera
   *cap = cvCaptureFromCAM(1);
+
+  // Set capture parameter
+  cvSetCaptureProperty(*cap, CV_CAP_PROP_FRAME_WIDTH, FRAME_WIDTH );
+  cvSetCaptureProperty(*cap, CV_CAP_PROP_FRAME_HEIGHT, FRAME_HEIGHT );
+
   // Window for LiveFeed
   cvNamedWindow("LiveFeed", CV_WINDOW_AUTOSIZE);
   if(!*cap)
@@ -50,27 +69,10 @@ int16_t visionConfig(CvCapture **cap)
     perror("Capture is NULL");
     return 1;
   }
-  
-//  cap.set(CV_CAP_PROP_FRAME_WIDTH, FRAME_WIDTH);
-//  cap.set(CV_CAP_PROP_FRAME_HEIGHT, FRAME_HEIGHT);
 
   return 0;
 }
 
-///**
-// * @brief Create trackbars to configure HSV filter value
-// */
-//void createTrackbars()
-//{
-//  namedWindow(trackbarWindowName,0);
-//  createTrackbar( "H_MIN", trackbarWindowName, &H_MIN, 256, NULL);
-//  createTrackbar( "H_MAX", trackbarWindowName, &H_MAX, 256, NULL);
-//  createTrackbar( "S_MIN", trackbarWindowName, &S_MIN, 256, NULL);
-//  createTrackbar( "S_MAX", trackbarWindowName, &S_MAX, 256, NULL);
-//  createTrackbar( "V_MIN", trackbarWindowName, &V_MIN, 256, NULL);
-//  createTrackbar( "V_MAX", trackbarWindowName, &V_MAX, 256, NULL);
-//}
-//
 ///**
 // * @brief Draw tracking point in Window
 // */
