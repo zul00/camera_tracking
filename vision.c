@@ -25,9 +25,6 @@ int S_MAX = 175;
 int V_MIN = 77;
 int V_MAX = 204;
 
-// Camera Config
-#define FRAME_WIDTH   320
-#define FRAME_HEIGHT  240
 
 // Tracking Config
 #define MAX_NUM_OBJECTS  50

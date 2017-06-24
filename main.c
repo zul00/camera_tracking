@@ -19,14 +19,15 @@
 
 int main(int argc, char *argv[])
 {
-  CvMat im;
   CvCapture **cap;   // Store camera
-  IplImage *frame;  // store frame
+  IplImage *im, *imHSV;  // store frame
+  CvSize size;
 
   printf("Welcoming OpenCV to C!!!\n");
 
   /* Initialize */
   cap = malloc(sizeof(CvCapture*));
+
   if (visionConfig(cap) != 0)
   {
     exit(-1);
@@ -35,12 +36,19 @@ int main(int argc, char *argv[])
   for(;;)
   {
     // Load next frame
-    frame=cvQueryFrame(*cap);
-    if(!frame)
+    im=cvQueryFrame(*cap);
+    if(!im)
       break;
 
+    // Convert color to HSV
+    size.width = FRAME_WIDTH;
+    size.height = FRAME_HEIGHT;
+    imHSV = cvCreateImage(size, im->depth, im->nChannels);
+    cvCvtColor(im, imHSV, CV_BGR2HSV);
+
     // Show present frame
-    cvShowImage("LiveFeed", frame);
+    cvShowImage("LiveFeed", im);
+    cvShowImage("HSV", imHSV);
 
     // Escape sequence
     char c=cvWaitKey(33);

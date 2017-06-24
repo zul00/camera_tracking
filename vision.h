@@ -25,7 +25,8 @@ int16_t visionConfig(CvCapture **cap);
 //extern int V_MIN;
 //extern int V_MAX;
 
-//extern const int FRAME_WIDTH;
-//extern const int FRAME_HEIGHT;
+// Camera Config
+#define FRAME_WIDTH   320
+#define FRAME_HEIGHT  240
 
 #endif
