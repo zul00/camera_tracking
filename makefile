@@ -11,20 +11,20 @@ OBJDIR = obj
 # Compiler
 #CROSS_COMPILER = arm-linux-gnueabi-gcc
 #CC = $(CROSS_COMPILER)gcc
-CC = g++
+CC = gcc
 
 # Specify library
 CFLAGS += -c -Wall -Wextra $(shell pkg-config --cflags opencv)
 LDFLAGS += $(shell pkg-config --libs --static opencv)
 
 # List C files
-SRC = $(wildcard *.cpp)
+SRC = $(wildcard *.c)
 
 # List dependencies
-DEP = $(wildcard *.hpp)
+DEP = $(wildcard *.h)
 
 # Target O files, at OBJDIR
-_OBJ = $(patsubst %.cpp, %.o, $(SRC))
+_OBJ = $(patsubst %.c, %.o, $(SRC))
 OBJ = $(patsubst %, $(OBJDIR)/%, $(_OBJ))
 
 # Main Rule
@@ -36,7 +36,7 @@ $(BIN): $(OBJ)
 	ctags -R
 
 # Rule for OBJECT
-$(OBJDIR)/%.o: %.cpp $(DEPS) | $(OBJDIR)
+$(OBJDIR)/%.o: %.c $(DEPS) | $(OBJDIR)
 	$(CC) -c -g $< -o $@ $(CFLAGS)
 
 # Create OBJDIR if not exist
