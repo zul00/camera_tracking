@@ -20,7 +20,7 @@
 int main(int argc, char *argv[])
 {
   CvCapture **cap;   // Store camera
-  IplImage *im, *imHSV;  // store frame
+  IplImage *im, *imHSV, *imBin;  // store frame
   CvSize size;
 
   printf("Welcoming OpenCV to C!!!\n");
@@ -41,14 +41,19 @@ int main(int argc, char *argv[])
       break;
 
     // Convert color to HSV
-    size.width = FRAME_WIDTH;
-    size.height = FRAME_HEIGHT;
+    size.width  = im->width;
+    size.height = im->height;
     imHSV = cvCreateImage(size, im->depth, im->nChannels);
     cvCvtColor(im, imHSV, CV_BGR2HSV);
+
+    // Thresholding image
+    imBin = cvCreateImage(size, IPL_DEPTH_8U, 1);
+    cvInRangeS(imHSV, cvScalar(H_MIN,S_MIN,V_MIN, 0),cvScalar(H_MAX,S_MAX,V_MAX, 0),imBin);
 
     // Show present frame
     cvShowImage("LiveFeed", im);
     cvShowImage("HSV", imHSV);
+    cvShowImage("Bin", imBin);
 
     // Escape sequence
     char c=cvWaitKey(33);
