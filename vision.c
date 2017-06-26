@@ -150,21 +150,20 @@ void trackFilteredObject(int16_t *x, int16_t *y, IplImage *in, IplImage *ref)
     {
       objectFound = false;
     }
-
-    // Do something if found
-    if(objectFound)
-    {
-      drawObject(*x,*y,ref);
-      //printf("Found!! %d, %d\n", *x-FRAME_WIDTH/2, -*y+FRAME_HEIGHT/2);
-    }
-    else
-    {
-      *x = 0;
-      *y = 0;
-    }
-
-#ifdef SHOW_GUI
-    cvShowImage("LiveFeed", ref);
-#endif
   }
+
+  // Do something if found
+  if(objectFound)
+  {
+    //printf("Found!! %d, %d\n", *x-FRAME_WIDTH/2, -*y+FRAME_HEIGHT/2);
+  }
+  else
+  {
+    *x = FRAME_WIDTH/2;
+    *y = FRAME_HEIGHT/2;
+  }
+#ifdef SHOW_GUI
+  drawObject(*x,*y,ref);
+  cvShowImage("LiveFeed", ref);
+#endif
 }

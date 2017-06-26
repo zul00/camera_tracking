@@ -97,9 +97,9 @@ int main(int argc, char *argv[])
   int16_t enc_tilt_value;
   int16_t enc_pan_value;
 
-  int16_t pwm_tilt_direction = 0;
-  long pwm_tilt_duty_cycle = 0;
-  int16_t pwm_pan_direction = 0;
+  uint16_t pwm_tilt_direction = 0;
+  uint16_t pwm_tilt_duty_cycle = 0;
+  uint16_t pwm_pan_direction = 0;
   uint16_t pwm_pan_duty_cycle = 0;
 
   XXDouble pan_u [2 + 1];
@@ -186,14 +186,12 @@ int main(int argc, char *argv[])
     pan = getAngleHorizontal(x-FRAME_WIDTH/2);
     tilt = getAngleVertical(-y+FRAME_HEIGHT/2);
 
-    printf("Angle!! %.2f, %.2f\n",
-        pan,
-        tilt);
+    printf("VISION>\n");
+    printf("PAN>>dis=%+4d;  rad=%+2.2f\n", 
+        x-FRAME_WIDTH/2, pan);
+    printf("TILT>>dis=%+4d; rad=%+2.2f\n",
+        -y+FRAME_HEIGHT/2, tilt);
 
-    // Stop timer
-    end = clock();
-    printf("Processing Time = %2.2f ms\n",
-        (1000.0*(end-start))/CLOCKS_PER_SEC );
 
     pan_u[0] = pan;     // Initialize pan value input
     tilt_u[1] = tilt;   // Initialize tilt value input
@@ -213,7 +211,8 @@ int main(int argc, char *argv[])
     pan_u[1] = convert_counter_to_radian(enc_pan_value, ENC_PAN_PULSES_PER_ROTATION); 
     tilt_u[2] = convert_counter_to_radian(enc_tilt_value, ENC_TILT_PULSES_PER_ROTATION); 
 
-    printf ("pan_u = %.2f; tilt_u = %.2f\n", pan_u[1], tilt_u[2]);
+    printf("FEEDBACK>\n");
+    printf ("RAD>>pan = %+1.2f; tilt = %+1.2f\n", pan_u[1], tilt_u[2]);
 
     /* Pan Controller calculations */
     PanCopyInputsToVariables(pan_u);
@@ -252,17 +251,17 @@ int main(int argc, char *argv[])
       pwm_tilt_duty_cycle = (uint16_t) (2500.0 * tilt_y[0]);
     }
 
-    printf("\tTILT DUTY = %5u;",
-        pwm_tilt_duty_cycle);
+    printf("CONTROL>\n");
+    printf("TILT>>duty = %4u; dir = %d\n",
+        pwm_tilt_duty_cycle, pwm_tilt_direction);
 
-    printf("TILT DIR = %d\n",
-        pwm_tilt_direction);
+    printf("PAN>>duty  = %4u; dir = %d\n",
+        pwm_pan_duty_cycle, pwm_pan_direction);
 
-    printf("\tPAN DUTY = %5u;",
-        pwm_pan_duty_cycle);
-
-    printf("PAN DIR =  %d\n",
-        pwm_pan_direction);
+    // Stop timer
+    end = clock();
+    printf("Processing Time = %2.2f ms\n",
+        (1000.0*(end-start))/CLOCKS_PER_SEC );
 
 #ifndef ARCH
     setGPMCValue(fd, pwm_tilt_direction, DIR_TILT);
