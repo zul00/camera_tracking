@@ -11,6 +11,8 @@
 #include <stdlib.h>
 #include <time.h>
 
+#include "gpmc_driver_c.h"
+
 //#include <opencv2/core/fast_math.hpp>   // Must check in other platform
 #include <opencv2/core/core_c.h>
 //#include <opencv2/videoio/videoio_c.h>

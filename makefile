@@ -14,8 +14,10 @@ OBJDIR = obj
 CC = gcc
 
 # Specify library
-CFLAGS += -c -Wall -Wextra $(shell pkg-config --cflags opencv)
+KERNEL_MODULE_DIR=$(PWD)/../kernel_module
+CFLAGS += -c -Wall -Wextra $(shell pkg-config --cflags opencv) -I$(KERNEL_MODULE_DIR)/include
 LDFLAGS += $(shell pkg-config --libs --static opencv)
+
 
 # List C files
 SRC = $(wildcard *.c)
