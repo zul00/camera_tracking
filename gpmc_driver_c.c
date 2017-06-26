@@ -7,7 +7,7 @@
 #include "gpmc_driver_c.h"
 
 // GPMC kernel module with definitions.
-#include "rt_gpmc_user/rt_gpmc_fpga.h"
+#include "rt_gpmc_fpga.h"
 
 #include <fcntl.h>      // open()
 #include <sys/ioctl.h>  // ioctl()

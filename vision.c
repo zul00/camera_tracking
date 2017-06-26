@@ -112,6 +112,19 @@ void morphOps(IplImage *in, IplImage *out)
   cvMorphologyEx(out, out, out, dilate_element, CV_MOP_CLOSE, 1);
 }
 
+#define PI 3.14159265359
+#define ANGLE PI/2
+
+double getAngleHorizontal(int pixels)
+{
+  return (double) ANGLE/2*pixels/FRAME_WIDTH;  
+}
+
+double getAngleVertical(int pixels)
+{
+  return (double) ANGLE/2*pixels/FRAME_HEIGHT;
+}
+
 /**
  * @brief Object tracking
  * @param x
@@ -161,7 +174,10 @@ void trackFilteredObject(int16_t *x, int16_t *y, IplImage *in, IplImage *ref)
     if(objectFound)
     {
       drawObject(*x,*y,ref);
-      printf("Found!! %d, %d\n", *x-FRAME_WIDTH/2, -*y+FRAME_HEIGHT/2);
+      //printf("Found!! %d, %d\n", *x-FRAME_WIDTH/2, -*y+FRAME_HEIGHT/2);
+      printf("Angle!! %.2f, %.2f\n",
+          getAngleHorizontal(*x-FRAME_WIDTH/2),
+          getAngleVertical(-*y+FRAME_HEIGHT/2));
     }
 
 #ifdef SHOW_GUI

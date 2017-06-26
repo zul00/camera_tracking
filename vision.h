@@ -28,6 +28,6 @@ extern int V_MAX;
 #define MORPH "Morph"
 #define TRACKBAR "Trackbars"
 
-#define SHOW_GUI
+//#define SHOW_GUI
 
 #endif
