@@ -161,7 +161,7 @@ void trackFilteredObject(int16_t *x, int16_t *y, IplImage *in, IplImage *ref)
     if(objectFound)
     {
       drawObject(*x,*y,ref);
-      printf("Found!! %d, %d\n", *x, *y);
+      printf("Found!! %d, %d\n", *x-FRAME_WIDTH/2, -*y+FRAME_HEIGHT/2);
     }
 
 #ifdef SHOW_GUI
