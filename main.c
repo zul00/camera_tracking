@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
 
   int16_t x = 0, y = 0;
   double pan = 0, tilt = 0;
-  clock_t start = 0, end = 0;
+  clock_t start = 0, end = 0, end_old = 0;
 
   int16_t enc_tilt_value;
   int16_t enc_pan_value;
@@ -221,8 +221,12 @@ int main(int argc, char *argv[])
 
     // Stop timer
     end = clock();
-    printf("Processing Time = %2.2f ms\n",
-        (1000.0*(end-start))/CLOCKS_PER_SEC );
+    printf("TIME>\n");
+    printf("process = %3.2f ms; period = %3.2f\n",
+        (1000.0*(end-start))/CLOCKS_PER_SEC,
+        (1000.0*(end-end_old))/CLOCKS_PER_SEC
+        );
+    end_old = end;
 
 #ifndef ARCH
     setGPMCValue(fd, pwm_tilt_direction, DIR_TILT);
@@ -233,7 +237,7 @@ int main(int argc, char *argv[])
     usleep(1000);
 #else
     // Escape sequence
-    char c=cvWaitKey(33);
+    char c=cvWaitKey(1);
     if(c==27)
       break;
 #endif
