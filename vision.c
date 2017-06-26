@@ -1,20 +1,22 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdbool.h>
 
-#include <opencv2/core/fast_math.hpp>   // Must check in other platform
+//#include <opencv2/core/fast_math.hpp>   // Must check in other platform
 #include <opencv2/core/core_c.h>
-#include <opencv2/videoio/videoio_c.h>
+//#include <opencv2/videoio/videoio_c.h>
+#include <opencv2/imgproc/imgproc_c.h>
 #include <opencv2/highgui/highgui_c.h>
 
 #include "vision.h"
 
 // HSV Filter value
-int H_MIN = 51;
-int H_MAX = 94;
-int S_MIN = 66;
-int S_MAX = 175;
-int V_MIN = 77;
-int V_MAX = 204;
+int H_MIN = 28;
+int H_MAX = 84;
+int S_MIN = 106;
+int S_MAX = 195;
+int V_MIN = 92;
+int V_MAX = 183;
 
 // Tracking Config
 #define MAX_NUM_OBJECTS  50
@@ -45,7 +47,7 @@ int16_t visionConfig(CvCapture **cap)
   createTrackbars();
 
   // Open camera
-  *cap = cvCaptureFromCAM(1);
+  *cap = cvCaptureFromCAM(0);
 
   // Set capture parameter
   cvSetCaptureProperty(*cap, CV_CAP_PROP_FRAME_WIDTH, FRAME_WIDTH );

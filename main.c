@@ -11,9 +11,10 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include <opencv2/core/fast_math.hpp>   // Must check in other platform
+//#include <opencv2/core/fast_math.hpp>   // Must check in other platform
 #include <opencv2/core/core_c.h>
-#include <opencv2/videoio/videoio_c.h>
+//#include <opencv2/videoio/videoio_c.h>
+#include <opencv2/imgproc/imgproc_c.h>
 #include <opencv2/highgui/highgui_c.h>
 
 #include "vision.h"
