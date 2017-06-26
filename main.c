@@ -78,6 +78,18 @@ void TiltCalculateOutput (void);
 void TiltCopyInputsToVariables (XXDouble *u);
 void TiltCopyVariablesToOutputs (XXDouble *y);
 
+#define PI 3.14159265359
+#define ANGLE PI/2
+
+double getAngleHorizontal(int pixels)
+{
+  return (double) ANGLE/2*pixels/FRAME_WIDTH;  
+}
+
+double getAngleVertical(int pixels)
+{
+  return (double) ANGLE/2*pixels/FRAME_HEIGHT;
+}
 
 int main(int argc, char *argv[])
 {
@@ -86,6 +98,7 @@ int main(int argc, char *argv[])
   CvSize size;
 
   int16_t x = 0, y = 0;
+  double pan = 0, tilt = 0;
   clock_t start = 0, end = 0;
 
   int16_t enc_tilt_value;
@@ -177,85 +190,95 @@ int main(int argc, char *argv[])
     // Track Object
     trackFilteredObject(&x,&y, imMorph, im);
 
+    pan = getAngleHorizontal(x-FRAME_WIDTH/2);
+    tilt = getAngleVertical(-y+FRAME_HEIGHT/2);
+
+    printf("Angle!! %.2f, %.2f\n",
+        pan,
+        tilt);
+
     // Stop timer
     end = clock();
     printf("Processing Time = %2.2f ms\n",
         (1000.0*(end-start))/CLOCKS_PER_SEC );
 
-//    /* Get encoder counter value from pan and tilt */
-//    enc_tilt_value = getGPMCValue(fd, ENC_TILT);
-//    enc_pan_value = getGPMCValue(fd, ENC_PAN);
-//
-//    //printf("ENC TILT = %d, ENC PAN = %d\n", enc_tilt_value, enc_pan_value);
-//
-//    /* Convert pan encoder counter to radians and give as input to controller */
-//    pan_u[1] = convert_counter_to_radian(enc_pan_value, ENC_PAN_PULSES_PER_ROTATION); 
-//    tilt_u[2] = convert_counter_to_radian(enc_tilt_value, ENC_TILT_PULSES_PER_ROTATION); 
-//
-//    printf ("pan_u = %.2f; tilt_u = %.2f\n", pan_u[1], tilt_u[2]);
-//
-//    /* Pan Controller calculations */
-//    PanCopyInputsToVariables(pan_u);
-//    PanCalculateDynamic();
-//    PanCalculateOutput();
-//    PanCopyVariablesToOutputs(pan_y);
-//
-//    /* Correction */
-//    tilt_u[0] = pan_y[0];
-//
-//    /* Tilt Controller calculations */
-//    TiltCopyInputsToVariables(tilt_u);
-//    TiltCalculateDynamic();
-//    TiltCalculateOutput();
-//    TiltCopyVariablesToOutputs(tilt_y);
-//
-//    if (pan_y[1] < 0)
-//    {
-//      pwm_pan_direction = 2;
-//      pwm_pan_duty_cycle = (uint16_t) (-2500.0 * pan_y[1]);
-//    }
-//    else
-//    {
-//      pwm_pan_direction = 1;
-//      pwm_pan_duty_cycle = (uint16_t) (2500.0 * pan_y[1]);
-//    }
-//
-//    if (tilt_y[0] < 0)
-//    {
-//      pwm_tilt_direction = 2;
-//      pwm_tilt_duty_cycle = (uint16_t) (-2500.0 * tilt_y[0]);
-//    }
-//    else
-//    {
-//      pwm_tilt_direction = 1;
-//      pwm_tilt_duty_cycle = (uint16_t) (2500.0 * tilt_y[0]);
-//    }
-//
-//    printf("\tTILT DUTY = %5u;",
-//        pwm_tilt_duty_cycle);
-//
-//    printf("TILT DIR = %d\n",
-//        pwm_tilt_direction);
-//
-//    printf("\tPAN DUTY = %5u;",
-//        pwm_pan_duty_cycle);
-//
-//    printf("PAN DIR =  %d\n",
-//        pwm_pan_direction);
-//
-//    setGPMCValue(fd, pwm_tilt_direction, DIR_TILT);
-//    setGPMCValue(fd, pwm_tilt_duty_cycle, DUTY_TILT);
-//    setGPMCValue(fd, pwm_pan_direction, DIR_PAN);
-//    setGPMCValue(fd, pwm_pan_duty_cycle, DUTY_PAN);
-//
-//    usleep(10000);
+    pan_u[0] = pan;     // Initialize pan value input
+    tilt_u[1] = tilt;   // Initialize tilt value input
+
+    /* Get encoder counter value from pan and tilt */
+    enc_tilt_value = getGPMCValue(fd, ENC_TILT);
+    enc_pan_value = getGPMCValue(fd, ENC_PAN);
+
+    //printf("ENC TILT = %d, ENC PAN = %d\n", enc_tilt_value, enc_pan_value);
+
+    /* Convert pan encoder counter to radians and give as input to controller */
+    pan_u[1] = convert_counter_to_radian(enc_pan_value, ENC_PAN_PULSES_PER_ROTATION); 
+    tilt_u[2] = convert_counter_to_radian(enc_tilt_value, ENC_TILT_PULSES_PER_ROTATION); 
+
+    printf ("pan_u = %.2f; tilt_u = %.2f\n", pan_u[1], tilt_u[2]);
+
+    /* Pan Controller calculations */
+    PanCopyInputsToVariables(pan_u);
+    PanCalculateDynamic();
+    PanCalculateOutput();
+    PanCopyVariablesToOutputs(pan_y);
+
+    /* Correction */
+    tilt_u[0] = pan_y[0];
+
+    /* Tilt Controller calculations */
+    TiltCopyInputsToVariables(tilt_u);
+    TiltCalculateDynamic();
+    TiltCalculateOutput();
+    TiltCopyVariablesToOutputs(tilt_y);
+
+    if (pan_y[1] < 0)
+    {
+      pwm_pan_direction = 2;
+      pwm_pan_duty_cycle = (uint16_t) (-2500.0 * pan_y[1]);
+    }
+    else
+    {
+      pwm_pan_direction = 1;
+      pwm_pan_duty_cycle = (uint16_t) (2500.0 * pan_y[1]);
+    }
+
+    if (tilt_y[0] < 0)
+    {
+      pwm_tilt_direction = 2;
+      pwm_tilt_duty_cycle = (uint16_t) (-2500.0 * tilt_y[0]);
+    }
+    else
+    {
+      pwm_tilt_direction = 1;
+      pwm_tilt_duty_cycle = (uint16_t) (2500.0 * tilt_y[0]);
+    }
+
+    printf("\tTILT DUTY = %5u;",
+        pwm_tilt_duty_cycle);
+
+    printf("TILT DIR = %d\n",
+        pwm_tilt_direction);
+
+    printf("\tPAN DUTY = %5u;",
+        pwm_pan_duty_cycle);
+
+    printf("PAN DIR =  %d\n",
+        pwm_pan_direction);
+
+    setGPMCValue(fd, pwm_tilt_direction, DIR_TILT);
+    setGPMCValue(fd, pwm_tilt_duty_cycle, DUTY_TILT);
+    setGPMCValue(fd, pwm_pan_direction, DIR_PAN);
+    setGPMCValue(fd, pwm_pan_duty_cycle, DUTY_PAN);
+
+    usleep(1000);
 
 
 
     // Escape sequence
-    char c=cvWaitKey(33);
-    if(c==27)
-      break;
+//    char c=cvWaitKey(0);
+//    if(c==27)
+//      break;
   }
 
   // CleanUp

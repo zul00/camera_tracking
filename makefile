@@ -9,14 +9,14 @@ BIN = $(PROJECT).bin
 OBJDIR = obj
 
 # Compiler
-#CROSS_COMPILER = arm-linux-gnueabi-gcc
+#CROSS_COMPILER = arm-linux-gnueabi-
 #CC = $(CROSS_COMPILER)gcc
 CC = gcc
 
 # Specify library
 KERNEL_MODULE_DIR=$(PWD)/../kernel_module
-CFLAGS += -c -Wall -Wextra $(shell pkg-config --cflags opencv) -I$(KERNEL_MODULE_DIR)/include
-LDFLAGS += $(shell pkg-config --libs --static opencv)
+CFLAGS += -c -Wall -Wextra -lm $(shell pkg-config --cflags opencv) -I$(KERNEL_MODULE_DIR)/include
+LDFLAGS += $(shell pkg-config --libs --static opencv) -lm
 
 
 # List C files

@@ -112,19 +112,6 @@ void morphOps(IplImage *in, IplImage *out)
   cvMorphologyEx(out, out, out, dilate_element, CV_MOP_CLOSE, 1);
 }
 
-#define PI 3.14159265359
-#define ANGLE PI/2
-
-double getAngleHorizontal(int pixels)
-{
-  return (double) ANGLE/2*pixels/FRAME_WIDTH;  
-}
-
-double getAngleVertical(int pixels)
-{
-  return (double) ANGLE/2*pixels/FRAME_HEIGHT;
-}
-
 /**
  * @brief Object tracking
  * @param x
