@@ -8,15 +8,6 @@
 
 #include "vision.h"
 
-//using namespace std;
-//using namespace cv;
-
-//const string windowName = "Original Image";
-//const string windowName1 = "HSV Image";
-//const string windowName2 = "Thresholded Image";
-//const string windowName3 = "After Morphological Operations";
-const char* trackbarWindowName = "Trackbars";
-
 // HSV Filter value
 int H_MIN = 51;
 int H_MAX = 94;
@@ -24,7 +15,6 @@ int S_MIN = 66;
 int S_MAX = 175;
 int V_MIN = 77;
 int V_MAX = 204;
-
 
 // Tracking Config
 #define MAX_NUM_OBJECTS  50
@@ -36,13 +26,15 @@ int V_MAX = 204;
  */
 void createTrackbars()
 {
-  cvNamedWindow(trackbarWindowName,0);
-  cvCreateTrackbar( "H_MIN", trackbarWindowName, &H_MIN, 256, NULL);
-  cvCreateTrackbar( "H_MAX", trackbarWindowName, &H_MAX, 256, NULL);
-  cvCreateTrackbar( "S_MIN", trackbarWindowName, &S_MIN, 256, NULL);
-  cvCreateTrackbar( "S_MAX", trackbarWindowName, &S_MAX, 256, NULL);
-  cvCreateTrackbar( "V_MIN", trackbarWindowName, &V_MIN, 256, NULL);
-  cvCreateTrackbar( "V_MAX", trackbarWindowName, &V_MAX, 256, NULL);
+#ifdef SHOW_GUI
+  cvNamedWindow(TRACKBAR,0);
+  cvCreateTrackbar( "H_MIN", TRACKBAR, &H_MIN, 256, NULL);
+  cvCreateTrackbar( "H_MAX", TRACKBAR, &H_MAX, 256, NULL);
+  cvCreateTrackbar( "S_MIN", TRACKBAR, &S_MIN, 256, NULL);
+  cvCreateTrackbar( "S_MAX", TRACKBAR, &S_MAX, 256, NULL);
+  cvCreateTrackbar( "V_MIN", TRACKBAR, &V_MIN, 256, NULL);
+  cvCreateTrackbar( "V_MAX", TRACKBAR, &V_MAX, 256, NULL);
+#endif
 }
 
 /**
@@ -60,7 +52,12 @@ int16_t visionConfig(CvCapture **cap)
   cvSetCaptureProperty(*cap, CV_CAP_PROP_FRAME_HEIGHT, FRAME_HEIGHT );
 
   // Window for LiveFeed
-  cvNamedWindow("LiveFeed", CV_WINDOW_AUTOSIZE);
+#ifdef SHOW_GUI
+  cvNamedWindow(LIVE, CV_WINDOW_AUTOSIZE);
+  cvNamedWindow(HSV, CV_WINDOW_AUTOSIZE);
+  cvNamedWindow(BIN, CV_WINDOW_AUTOSIZE);
+  cvNamedWindow(MORPH, CV_WINDOW_AUTOSIZE);
+#endif
   if(!*cap)
   {
     perror("Capture is NULL");
@@ -85,8 +82,10 @@ void drawObject(int x, int y, IplImage *im)
   cvInitFont(&font, CV_FONT_HERSHEY_DUPLEX, 0.8, 0.8, 0, 1, 8);
 
   // Print text
+#ifdef SHOW_GUI
   sprintf(text, "%d,%d", x, y);
   cvPutText(im,text,cvPoint(x,y+30),&font,cvScalar(0,255,0,0));
+#endif
 }
 
 /**
@@ -163,51 +162,8 @@ void trackFilteredObject(int16_t *x, int16_t *y, IplImage *in, IplImage *ref)
       printf("Found!! %d, %d\n", *x, *y);
     }
 
+#ifdef SHOW_GUI
+    cvShowImage("LiveFeed", ref);
+#endif
   }
-//  Mat temp;
-//  threshold.copyTo(temp);
-//  //these two vectors needed for output of findContours
-//  vector< vector<Point> > contours;
-//  vector<Vec4i> hierarchy;
-//  //find contours of filtered image using openCV findContours function
-//  findContours(temp,contours,hierarchy,CV_RETR_CCOMP,CV_CHAIN_APPROX_SIMPLE );
-//  //use moments method to find our filtered object
-//  double refArea = 0;
-//  bool objectFound = false;
-//  if (hierarchy.size() > 0) 
-//  {
-//    int numObjects = hierarchy.size();
-//    //if number of objects greater than MAX_NUM_OBJECTS we have a noisy filter
-//    if(numObjects<MAX_NUM_OBJECTS)
-//    {
-//      for (int index = 0; index >= 0; index = hierarchy[index][0]) 
-//      { 
-//        Moments moment = moments((cv::Mat)contours[index]);
-//        double area = moment.m00;
-//
-//        if(area>MIN_OBJECT_AREA && area<MAX_OBJECT_AREA && area>refArea)
-//        {
-//          x = moment.m10/area;
-//          y = moment.m01/area;
-//          objectFound = true;
-//          refArea = area;
-//        }
-//        else
-//        {
-//          objectFound = false;
-//        }
-//      }
-//      //let user know you found an object
-//      if(objectFound ==true)
-//      {
-//        putText(cameraFeed,"Tracking Object",Point(0,50),2,1,Scalar(0,255,0),2);
-//        //draw object location on screen
-//        drawObject(x,y,cameraFeed);}
-//    }
-//    else
-//    {
-//      putText(cameraFeed,"TOO MUCH NOISE! ADJUST FILTER",Point(0,50),1,2,Scalar(0,0,255),2);
-//    }
-//  }
 }
-

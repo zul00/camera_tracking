@@ -36,7 +36,7 @@ $(BIN): $(OBJ)
 	ctags -R
 
 # Rule for OBJECT
-$(OBJDIR)/%.o: %.c $(DEPS) | $(OBJDIR)
+$(OBJDIR)/%.o: %.c $(DEP) | $(OBJDIR)
 	$(CC) -c -g $< -o $@ $(CFLAGS)
 
 # Create OBJDIR if not exist

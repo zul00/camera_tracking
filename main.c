@@ -42,6 +42,7 @@ int main(int argc, char *argv[])
     // Start timer
     start = clock();
 
+    /* Image processing */
     // Load next frame
     im=cvQueryFrame(*cap);
     if(!im)
@@ -63,13 +64,14 @@ int main(int argc, char *argv[])
     morphOps(imBin, imMorph);
 
     // Show present frame
+#ifdef SHOW_GUI
     cvShowImage("HSV", imHSV);
     cvShowImage("Bin", imBin);
     cvShowImage("Morph", imMorph);
+#endif
 
     // Track Object
     trackFilteredObject(&x,&y, imMorph, im);
-    cvShowImage("LiveFeed", im);
 
     // Stop timer
     end = clock();

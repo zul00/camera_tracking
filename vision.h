@@ -21,4 +21,13 @@ extern int V_MAX;
 #define FRAME_WIDTH   320
 #define FRAME_HEIGHT  240
 
+// Window Name
+#define LIVE  "LiveFeed"
+#define HSV   "HSV"
+#define BIN   "Bin"
+#define MORPH "Morph"
+#define TRACKBAR "Trackbars"
+
+#define SHOW_GUI
+
 #endif
