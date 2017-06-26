@@ -70,34 +70,24 @@ int16_t visionConfig(CvCapture **cap)
   return 0;
 }
 
-///**
-// * @brief Draw tracking point in Window
-// */
-//void drawObject(int x, int y, Mat &frame)
-//{
-//  //use some of the openCV drawing functions to draw crosshairs
-//  //on your tracked image!
-//
-//  //UPDATE:JUNE 18TH, 2013
-//  //added 'if' and 'else' statements to prevent
-//  //memory errors from writing off the screen (ie. (-25,-25) is not within the window!)
-//
-//  circle(frame,Point(x,y),20,Scalar(0,255,0),2);
-//  if(y-25>0)
-//    line(frame,Point(x,y),Point(x,y-25),Scalar(0,255,0),2);
-//  else line(frame,Point(x,y),Point(x,0),Scalar(0,255,0),2);
-//  if(y+25<FRAME_HEIGHT)
-//    line(frame,Point(x,y),Point(x,y+25),Scalar(0,255,0),2);
-//  else line(frame,Point(x,y),Point(x,FRAME_HEIGHT),Scalar(0,255,0),2);
-//  if(x-25>0)
-//    line(frame,Point(x,y),Point(x-25,y),Scalar(0,255,0),2);
-//  else line(frame,Point(x,y),Point(0,y),Scalar(0,255,0),2);
-//  if(x+25<FRAME_WIDTH)
-//    line(frame,Point(x,y),Point(x+25,y),Scalar(0,255,0),2);
-//  else line(frame,Point(x,y),Point(FRAME_WIDTH,y),Scalar(0,255,0),2);
-//
-// // putText(frame,intToString(x)+","+intToString(y),Point(x,y+30),1,1,Scalar(0,255,0),2);
-//}
+/**
+ * @brief Draw tracking point in Window
+ */
+void drawObject(int x, int y, IplImage *im)
+{
+  char text[40];
+  CvFont font;
+
+  // Draw circle
+  cvCircle(im,cvPoint(x,y),10,cvScalar(0,255,0,0),2,8,0);
+
+  // Prepare font
+  cvInitFont(&font, CV_FONT_HERSHEY_DUPLEX, 0.8, 0.8, 0, 1, 8);
+
+  // Print text
+  sprintf(text, "%d,%d", x, y);
+  cvPutText(im,text,cvPoint(x,y+30),&font,cvScalar(0,255,0,0));
+}
 
 /**
  * @brief Get binary map
@@ -117,9 +107,8 @@ void morphOps(IplImage *in, IplImage *out)
   cvErode(in, out, erode_element, 3);
 
   // Dilate image
-  cvDilate(out, out, dilate_element, 2);
-
-  //cvMorphologyEx(out, out, out, dilate_element, CV_MOP_CLOSE, 1);
+  cvDilate(out, out, dilate_element, 1);
+  cvMorphologyEx(out, out, out, dilate_element, CV_MOP_CLOSE, 1);
 }
 
 ///**
@@ -176,5 +165,5 @@ void morphOps(IplImage *in, IplImage *out)
 //      putText(cameraFeed,"TOO MUCH NOISE! ADJUST FILTER",Point(0,50),1,2,Scalar(0,0,255),2);
 //    }
 //  }
-//}
-//
+}
+

@@ -23,6 +23,8 @@ int main(int argc, char *argv[])
   IplImage *im, *imHSV, *imBin, *imMorph;  // store frame
   CvSize size;
 
+  int16_t x = 0, y = 0;
+
   printf("Welcoming OpenCV to C!!!\n");
 
   /* Initialize */
@@ -54,6 +56,9 @@ int main(int argc, char *argv[])
     // Morph binary image
     imMorph = cvCreateImage(size, IPL_DEPTH_8U, 1);
     morphOps(imBin, imMorph);
+
+    // Track Object
+    drawObject(FRAME_WIDTH/2, FRAME_HEIGHT/2, im);
 
     // Show present frame
     cvShowImage("LiveFeed", im);
