@@ -6,7 +6,7 @@
 
 //void createTrackbars();
 //void drawObject(int x, int y, cv::Mat &frame);
-//void morphOps(cv::Mat &in, cv::Mat &out);
+void morphOps(IplImage *in, IplImage *out);
 //void trackFilteredObject(int &x, int &y, cv::Mat threshold, cv::Mat &cameraFeed);
 int16_t visionConfig(CvCapture **cap);
 

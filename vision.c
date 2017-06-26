@@ -98,27 +98,30 @@ int16_t visionConfig(CvCapture **cap)
 //
 // // putText(frame,intToString(x)+","+intToString(y),Point(x,y+30),1,1,Scalar(0,255,0),2);
 //}
-//
-///**
-// * @brief Get binary map
-// */
-//void morphOps(Mat &in, Mat &out)
-//{
-//  //create structuring element that will be used to "dilate" and "erode" image.
-//  //the element chosen here is a 3px by 3px rectangle
-//
-//  Mat erodeElement = getStructuringElement( MORPH_RECT,Size(3,3));
-//  Mat dilateElement = getStructuringElement( MORPH_RECT,Size(8,8));
-//
-//  erode(in,out,erodeElement);
-//  erode(out,out,erodeElement);
-//
-//  dilate(out,out,dilateElement);
-//  //dilate(out,out,dilateElement);
-//  
-//  morphologyEx(out, out, MORPH_CLOSE, dilateElement);
-//}
-//
+
+/**
+ * @brief Get binary map
+ */
+void morphOps(IplImage *in, IplImage *out)
+{
+  IplConvKernel *erode_element;
+  IplConvKernel *dilate_element;
+
+  // Create elements
+  erode_element = cvCreateStructuringElementEx(3, 3, 1, 1, 
+      CV_SHAPE_RECT, NULL);
+  dilate_element = cvCreateStructuringElementEx(8, 8, 1, 1, 
+      CV_SHAPE_RECT, NULL);
+
+  // Erode image
+  cvErode(in, out, erode_element, 3);
+
+  // Dilate image
+  cvDilate(out, out, dilate_element, 2);
+
+  //cvMorphologyEx(out, out, out, dilate_element, CV_MOP_CLOSE, 1);
+}
+
 ///**
 // * @brief Object tracking
 // * @param x

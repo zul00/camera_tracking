@@ -20,7 +20,7 @@
 int main(int argc, char *argv[])
 {
   CvCapture **cap;   // Store camera
-  IplImage *im, *imHSV, *imBin;  // store frame
+  IplImage *im, *imHSV, *imBin, *imMorph;  // store frame
   CvSize size;
 
   printf("Welcoming OpenCV to C!!!\n");
@@ -48,12 +48,18 @@ int main(int argc, char *argv[])
 
     // Thresholding image
     imBin = cvCreateImage(size, IPL_DEPTH_8U, 1);
-    cvInRangeS(imHSV, cvScalar(H_MIN,S_MIN,V_MIN, 0),cvScalar(H_MAX,S_MAX,V_MAX, 0),imBin);
+    cvInRangeS(imHSV, 
+        cvScalar(H_MIN,S_MIN,V_MIN, 0),cvScalar(H_MAX,S_MAX,V_MAX, 0),imBin);
+
+    // Morph binary image
+    imMorph = cvCreateImage(size, IPL_DEPTH_8U, 1);
+    morphOps(imBin, imMorph);
 
     // Show present frame
     cvShowImage("LiveFeed", im);
     cvShowImage("HSV", imHSV);
     cvShowImage("Bin", imBin);
+    cvShowImage("Morph", imMorph);
 
     // Escape sequence
     char c=cvWaitKey(33);
