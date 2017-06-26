@@ -1,21 +1,13 @@
 #ifndef __VISION_H
 #define __VISION_H
 
-//#include <iostream>
 #include <stdint.h>
 
 //void createTrackbars();
 void drawObject(int x, int y, IplImage *im);
 void morphOps(IplImage *in, IplImage *out);
-//void trackFilteredObject(int &x, int &y, cv::Mat threshold, cv::Mat &cameraFeed);
+void trackFilteredObject(int16_t *x, int16_t *y, IplImage *in, IplImage *ref);
 int16_t visionConfig(CvCapture **cap);
-
-
-//extern const std::string windowName;
-//extern const std::string windowName1;
-//extern const std::string windowName2;
-//extern const std::string windowName3;
-//extern const std::string trackbarWindowName;
 
 // HSV Filter value
 extern int H_MIN;

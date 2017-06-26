@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
     morphOps(imBin, imMorph);
 
     // Track Object
-    drawObject(FRAME_WIDTH/2, FRAME_HEIGHT/2, im);
+    trackFilteredObject(&x,&y, imMorph, im);
 
     // Show present frame
     cvShowImage("LiveFeed", im);

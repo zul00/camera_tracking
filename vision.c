@@ -107,19 +107,63 @@ void morphOps(IplImage *in, IplImage *out)
   cvErode(in, out, erode_element, 3);
 
   // Dilate image
-  cvDilate(out, out, dilate_element, 1);
+  cvDilate(out, out, dilate_element, 2);
   cvMorphologyEx(out, out, out, dilate_element, CV_MOP_CLOSE, 1);
 }
 
-///**
-// * @brief Object tracking
-// * @param x
-// * @param y
-// * @param threshold
-// * @param cameraFeed
-// */
-//void trackFilteredObject(int &x, int &y, Mat threshold, Mat &cameraFeed)
-//{
+/**
+ * @brief Object tracking
+ * @param x
+ * @param y
+ * @param threshold
+ * @param cameraFeed
+ */
+void trackFilteredObject(int16_t *x, int16_t *y, IplImage *in, IplImage *ref)
+{
+  CvMemStorage *storage;
+  CvSeq *contours = 0;
+  CvMoments mom;
+
+  double refArea = 0;
+  bool objectFound = false;
+  double area = 0;
+
+  // Prepare storage
+  storage = cvCreateMemStorage(0);
+  cvClearMemStorage(storage);
+
+  // Find contour
+  cvFindContours(in, storage, &contours, sizeof(CvContour),
+      CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE, cvPoint(0,0));
+
+  // Scan contour
+  for(;contours;contours=contours->h_next)
+  {
+    // Get moment
+    cvMoments(contours, &mom, 0);
+    area = cvGetSpatialMoment(&mom, 0, 0); 
+
+    // Check area size to determine validity
+    if(area>MIN_OBJECT_AREA && area<MAX_OBJECT_AREA && area>refArea)
+    {
+      *x = cvGetSpatialMoment(&mom, 1, 0)/area;
+      *y = cvGetSpatialMoment(&mom, 0, 1)/area;
+      objectFound = true;
+      refArea = area;
+    }
+    else
+    {
+      objectFound = false;
+    }
+
+    // Do something if found
+    if(objectFound)
+    {
+      drawObject(*x,*y,ref);
+      printf("Found!! %d, %d\n", *x, *y);
+    }
+
+  }
 //  Mat temp;
 //  threshold.copyTo(temp);
 //  //these two vectors needed for output of findContours
