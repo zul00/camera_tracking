@@ -31,11 +31,6 @@
 #define ENC_TILT_PULSES_PER_ROTATION 900
 
 double convert_counter_to_radian(long c, int16_t pulses_per_rotation);
-void TiltModelInitialize (void);
-void TiltCalculateDynamic (void);
-void TiltCalculateOutput (void);
-void TiltCopyInputsToVariables (XXDouble *u);
-void TiltCopyVariablesToOutputs (XXDouble *y);
 
 #define PI 3.14159265359
 #define ANGLE PI/2

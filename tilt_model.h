@@ -16,12 +16,12 @@ extern XXDouble tilt_F[];   /* favorite parameters */
 extern XXDouble tilt_f[];   /* favorite variables */
 
 extern XXDouble tilt_step_size;
-//
-//void TiltModelInitialize (void);
-//void TiltCalculateDynamic (void);
-//void TiltCalculateOutput (void);
-//void TiltCopyInputsToVariables (XXDouble *u);
-//void TiltCopyVariablesToOutputs (XXDouble *y);
-//
-//
+
+void TiltModelInitialize (void);
+void TiltCalculateDynamic (void);
+void TiltCalculateOutput (void);
+void TiltCopyInputsToVariables (XXDouble *u);
+void TiltCopyVariablesToOutputs (XXDouble *y);
+
+
 #endif
