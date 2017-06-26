@@ -2,12 +2,6 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-//#include <opencv2/core/fast_math.hpp>   // Must check in other platform
-#include <opencv2/core/core_c.h>
-//#include <opencv2/videoio/videoio_c.h>
-#include <opencv2/imgproc/imgproc_c.h>
-#include <opencv2/highgui/highgui_c.h>
-
 #include "vision.h"
 
 // HSV Filter value
@@ -42,12 +36,12 @@ void createTrackbars()
 /**
  * @brief Configure vision
  */
-int16_t visionConfig(CvCapture **cap)
+int16_t visionConfig(CvCapture **cap, uint16_t cam_id)
 {
   createTrackbars();
 
   // Open camera
-  *cap = cvCaptureFromCAM(0);
+  *cap = cvCaptureFromCAM(cam_id);
 
   // Set capture parameter
   cvSetCaptureProperty(*cap, CV_CAP_PROP_FRAME_WIDTH, FRAME_WIDTH );
@@ -162,9 +156,11 @@ void trackFilteredObject(int16_t *x, int16_t *y, IplImage *in, IplImage *ref)
     {
       drawObject(*x,*y,ref);
       //printf("Found!! %d, %d\n", *x-FRAME_WIDTH/2, -*y+FRAME_HEIGHT/2);
-      printf("Angle!! %.2f, %.2f\n",
-          getAngleHorizontal(*x-FRAME_WIDTH/2),
-          getAngleVertical(-*y+FRAME_HEIGHT/2));
+    }
+    else
+    {
+      *x = 0;
+      *y = 0;
     }
 
 #ifdef SHOW_GUI

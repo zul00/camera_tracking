@@ -13,13 +13,6 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-
-//#include <opencv2/core/fast_math.hpp>   // Must check in other platform
-#include <opencv2/core/core_c.h>
-//#include <opencv2/videoio/videoio_c.h>
-#include <opencv2/imgproc/imgproc_c.h>
-#include <opencv2/highgui/highgui_c.h>
-
 #include "vision.h"
 
 #include "gpmc_driver_c.h"
@@ -117,28 +110,29 @@ int main(int argc, char *argv[])
 
   printf("Welcoming OpenCV to C!!!\n");
 
-  int fd; // File descriptor.
+
+  /* Initialize */
+  // Initialize vision
+  cap = malloc(sizeof(CvCapture*));
+  if (visionConfig(cap, 1) != 0)
+  {
+    exit(-1);
+  }
+  // Open GPMC
+#ifndef ARCH
   if (2 != argc)
   {
     printf("Usage: %s <device_name>\n", argv[0]);
     return 1;
   }
-
-  /* Initialize */
-  // Initialize vision
-  cap = malloc(sizeof(CvCapture*));
-  if (visionConfig(cap) != 0)
-  {
-    exit(-1);
-  }
-  // Open GPMC
   printf("Opening gpmc_fpga...\n");
-  fd = open(argv[1], 0);
+  int fd = open(argv[1], 0);
   if (0 > fd)
   {
     printf("Error, could not open device: %s.\n", argv[1]);
     return 1;
   }
+#endif
   // Initialize Variable 
   pan_u[0] = 0.0;   // Initialize pan value input
   pan_u[1] = 0.0;   // Initialize pan value position 
@@ -152,7 +146,6 @@ int main(int argc, char *argv[])
   // Initilize Control
   PanModelInitialize();  
   TiltModelInitialize();
-
 
   for(;;)
   {
@@ -206,8 +199,13 @@ int main(int argc, char *argv[])
     tilt_u[1] = tilt;   // Initialize tilt value input
 
     /* Get encoder counter value from pan and tilt */
+#ifndef ARCH
     enc_tilt_value = getGPMCValue(fd, ENC_TILT);
     enc_pan_value = getGPMCValue(fd, ENC_PAN);
+#else
+    enc_tilt_value = 0;
+    enc_pan_value = 0;
+#endif
 
     //printf("ENC TILT = %d, ENC PAN = %d\n", enc_tilt_value, enc_pan_value);
 
@@ -266,19 +264,19 @@ int main(int argc, char *argv[])
     printf("PAN DIR =  %d\n",
         pwm_pan_direction);
 
+#ifndef ARCH
     setGPMCValue(fd, pwm_tilt_direction, DIR_TILT);
     setGPMCValue(fd, pwm_tilt_duty_cycle, DUTY_TILT);
     setGPMCValue(fd, pwm_pan_direction, DIR_PAN);
     setGPMCValue(fd, pwm_pan_duty_cycle, DUTY_PAN);
 
     usleep(1000);
-
-
-
+#else
     // Escape sequence
-//    char c=cvWaitKey(0);
-//    if(c==27)
-//      break;
+    char c=cvWaitKey(33);
+    if(c==27)
+      break;
+#endif
   }
 
   // CleanUp

@@ -15,7 +15,7 @@ CC = gcc
 
 # Specify library
 KERNEL_MODULE_DIR=$(PWD)/../kernel_module
-CFLAGS += -c -Wall -Wextra -lm $(shell pkg-config --cflags opencv) -I$(KERNEL_MODULE_DIR)/include
+CFLAGS += -c -Wall -Wextra -lm $(shell pkg-config --cflags opencv)
 LDFLAGS += $(shell pkg-config --libs --static opencv) -lm
 
 
