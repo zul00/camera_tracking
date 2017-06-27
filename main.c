@@ -88,7 +88,7 @@ int main(int argc, char *argv[])
   /* Initialize */
   // Initialize vision
   cap = malloc(sizeof(CvCapture*));
-  if (visionConfig(cap, 1) != 0)
+  if (visionConfig(cap, 0) != 0)
   {
     exit(-1);
   }
@@ -171,9 +171,6 @@ int main(int argc, char *argv[])
     printf("TILT>>dis=%+4d; rad=%+2.2f\n",
         -y+FRAME_HEIGHT/2, tilt_rad);
 
-    // Store rad
-    pan_u[0] = pan_rad;     // Update pan value input
-    tilt_u[1] = tilt_rad;   // Update tilt value input
 
     /* -FEEDBACK- */
 #ifndef ARCH
@@ -187,6 +184,10 @@ int main(int argc, char *argv[])
     // Convert pan encoder counter to radians
     pan_u[1] = enc_ctr2rad(enc_pan_value, ENC_PAN_PULSES_PER_ROTATION); 
     tilt_u[2] = enc_ctr2rad(enc_tilt_value, ENC_TILT_PULSES_PER_ROTATION); 
+
+    // Store rad
+    pan_u[0] = pan_u[1] + pan_rad;     // Update pan value input
+    tilt_u[1] = tilt_u[2] + tilt_rad;   // Update tilt value input
 
     printf("FEEDBACK>\n");
     printf ("RAD>>pan = %+1.2f; tilt = %+1.2f\n", pan_u[1], tilt_u[2]);
@@ -221,14 +222,16 @@ int main(int argc, char *argv[])
 
     if (tilt_y[0] < 0)
     {
-      pwm_tilt_direction = 2;
+      pwm_tilt_direction = 1;
       pwm_tilt_duty_cycle = (uint16_t) (-2500.0 * tilt_y[0]);
     }
     else
     {
-      pwm_tilt_direction = 1;
+      pwm_tilt_direction = 2;
       pwm_tilt_duty_cycle = (uint16_t) (2500.0 * tilt_y[0]);
     }
+
+    pwm_tilt_duty_cycle = 0;
 
     printf("CONTROL>\n");
     printf("TILT>>duty = %4u; dir = %d\n",

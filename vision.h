@@ -3,8 +3,8 @@
 
 #include <stdint.h>
 
-#define ARCH
-#define SHOW_GUI
+//#define ARCH
+//#define SHOW_GUI
 
 #ifdef ARCH    // Must check in other platform
 #include <opencv2/core/fast_math.hpp>
