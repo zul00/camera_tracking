@@ -1,6 +1,7 @@
 /**
  * @file  main.c
  * @brief Control two joint JIWY module
+ * @author Zulkarnaen & Tom Hogenkamp
  *
  * OpenCV reference:
  * https://www.youtube.com/watch?v=bSeFrPrqZ2A
@@ -12,6 +13,7 @@
 #include <time.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <math.h>
 
 #include "vision.h"
 
@@ -32,19 +34,28 @@
 #define ENC_PAN_PULSES_PER_ROTATION 4000
 #define ENC_TILT_PULSES_PER_ROTATION 900
 
-double convert_counter_to_radian(long c, int16_t pulses_per_rotation);
+double enc_ctr2rad(long c, int16_t pulses_per_rotation);
 
-#define PI 3.14159265359
-#define ANGLE PI/2
+#define DFOH  0.91   // 52 deg
+#define DFOV  0.70   // 40 deg
 
-double getAngleHorizontal(int pixels)
+#define tanDFOH 0.4892  // tan(DFOH/2)
+#define tanDFOV 0.3650  // tan(DFOV/2)
+
+/**
+ * @brief Change horizontal pixel distance to angle in radian
+ */
+double px2rad_hor(int pixels)
 {
-  return (double) ANGLE/2*pixels/FRAME_WIDTH;  
+  return (double) atan2((pixels*tanDFOH), FRAME_WIDTH/2);  
 }
 
-double getAngleVertical(int pixels)
+/**
+ * @brief Change vertical pixel distance to angle in radian
+ */
+double px2rad_ver(int pixels)
 {
-  return (double) ANGLE/2*pixels/FRAME_HEIGHT;
+  return (double) atan2((pixels*tanDFOV), FRAME_HEIGHT/2);
 }
 
 int main(int argc, char *argv[])
@@ -54,7 +65,7 @@ int main(int argc, char *argv[])
   CvSize size;
 
   int16_t x = 0, y = 0;
-  double pan = 0, tilt = 0;
+  double pan_rad = 0, tilt_rad = 0;
   clock_t start = 0, end = 0, start_old = 0;
 
   int16_t enc_tilt_value;
@@ -112,14 +123,14 @@ int main(int argc, char *argv[])
 
   for(;;)
   {
-    // Period controller
+    /* -SCHEDULER- */
     do
     {
       // Read starting clock
       start = clock();
     }while(1000*(start-start_old)/CLOCKS_PER_SEC < PERIOD_MS);
 
-    /* Image processing */
+    /* -IMAGE PROCESSING- */
     // Load next frame
     im=cvQueryFrame(*cap);
     if(!im)
@@ -150,20 +161,21 @@ int main(int argc, char *argv[])
     // Track Object
     trackFilteredObject(&x,&y, imMorph, im);
 
-    pan = getAngleHorizontal(x-FRAME_WIDTH/2);
-    tilt = getAngleVertical(-y+FRAME_HEIGHT/2);
+    // Convert distance to radian
+    pan_rad  = px2rad_hor(x-FRAME_WIDTH/2);
+    tilt_rad = px2rad_ver(-y+FRAME_HEIGHT/2);
 
     printf("VISION>\n");
     printf("PAN>>dis =%+4d; rad=%+2.2f\n", 
-        x-FRAME_WIDTH/2, pan);
+        x-FRAME_WIDTH/2, pan_rad);
     printf("TILT>>dis=%+4d; rad=%+2.2f\n",
-        -y+FRAME_HEIGHT/2, tilt);
+        -y+FRAME_HEIGHT/2, tilt_rad);
 
+    // Store rad
+    pan_u[0] = pan_rad;     // Update pan value input
+    tilt_u[1] = tilt_rad;   // Update tilt value input
 
-    pan_u[0] = pan;     // Initialize pan value input
-    tilt_u[1] = tilt;   // Initialize tilt value input
-
-    /* Get encoder counter value from pan and tilt */
+    /* -FEEDBACK- */
 #ifndef ARCH
     enc_tilt_value = getGPMCValue(fd, ENC_TILT);
     enc_pan_value = getGPMCValue(fd, ENC_PAN);
@@ -172,30 +184,30 @@ int main(int argc, char *argv[])
     enc_pan_value = 0;
 #endif
 
-    //printf("ENC TILT = %d, ENC PAN = %d\n", enc_tilt_value, enc_pan_value);
-
-    /* Convert pan encoder counter to radians and give as input to controller */
-    pan_u[1] = convert_counter_to_radian(enc_pan_value, ENC_PAN_PULSES_PER_ROTATION); 
-    tilt_u[2] = convert_counter_to_radian(enc_tilt_value, ENC_TILT_PULSES_PER_ROTATION); 
+    // Convert pan encoder counter to radians
+    pan_u[1] = enc_ctr2rad(enc_pan_value, ENC_PAN_PULSES_PER_ROTATION); 
+    tilt_u[2] = enc_ctr2rad(enc_tilt_value, ENC_TILT_PULSES_PER_ROTATION); 
 
     printf("FEEDBACK>\n");
     printf ("RAD>>pan = %+1.2f; tilt = %+1.2f\n", pan_u[1], tilt_u[2]);
 
-    /* Pan Controller calculations */
+    /* -CONTROLLER- */
+    // Pan Controller calculations
     PanCopyInputsToVariables(pan_u);
     PanCalculateDynamic();
     PanCalculateOutput();
     PanCopyVariablesToOutputs(pan_y);
 
-    /* Correction */
+    // Correction
     tilt_u[0] = pan_y[0];
 
-    /* Tilt Controller calculations */
+    // Tilt Controller calculations
     TiltCopyInputsToVariables(tilt_u);
     TiltCalculateDynamic();
     TiltCalculateOutput();
     TiltCopyVariablesToOutputs(tilt_y);
 
+    // Convert Output to PWM and DIR
     if (pan_y[1] < 0)
     {
       pwm_pan_direction = 2;
@@ -221,11 +233,10 @@ int main(int argc, char *argv[])
     printf("CONTROL>\n");
     printf("TILT>>duty = %4u; dir = %d\n",
         pwm_tilt_duty_cycle, pwm_tilt_direction);
-
     printf("PAN>>duty  = %4u; dir = %d\n",
         pwm_pan_duty_cycle, pwm_pan_direction);
 
-    // Stop timer
+    // Stop timer and measure time
     end = clock();
     printf("TIME>\n");
     printf("process = %3.2f ms; period = %3.2f ms\n",
@@ -259,7 +270,7 @@ int main(int argc, char *argv[])
 
 /***********************************************************/
 
-double convert_counter_to_radian(long c, int16_t pulses_per_rotation)
+double enc_ctr2rad(long c, int16_t pulses_per_rotation)
 {
   return 2*M_PI/pulses_per_rotation*c;
 }

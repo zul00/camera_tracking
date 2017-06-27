@@ -30,8 +30,8 @@ extern int V_MIN;
 extern int V_MAX;
 
 // Camera Config
-#define FRAME_WIDTH   320
-#define FRAME_HEIGHT  240
+#define FRAME_WIDTH   160 
+#define FRAME_HEIGHT  120
 
 // Window Name
 #define LIVE  "LiveFeed"

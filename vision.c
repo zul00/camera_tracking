@@ -75,7 +75,7 @@ void drawObject(int x, int y, IplImage *im)
   cvCircle(im,cvPoint(x,y),10,cvScalar(0,255,0,0),2,8,0);
 
   // Prepare font
-  cvInitFont(&font, CV_FONT_HERSHEY_DUPLEX, 0.8, 0.8, 0, 1, 8);
+  cvInitFont(&font, CV_FONT_HERSHEY_DUPLEX, 0.5, 0.5, 0, 1, 8);
 
   // Print text
 #ifdef SHOW_GUI
