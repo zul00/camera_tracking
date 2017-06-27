@@ -1,4 +1,5 @@
 #include "xxmatrix.h"
+#include "config.h"
 
 /* Variable arrays tilt */
 XXDouble tilt_C[0 + 1];   /* constants */
@@ -13,7 +14,7 @@ XXDouble tilt_workarray[0 + 1];
 XXDouble tilt_F[0 + 1];   /* favorite parameters */
 XXDouble tilt_f[0 + 1];   /* favorite variables */
 
-XXDouble tilt_step_size = 0.01;
+XXDouble tilt_step_size = PERIOD_MS/1000;
 
 void TiltModelInitialize (void)
 {

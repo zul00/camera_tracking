@@ -20,6 +20,8 @@
 #include "pan_model.h"
 #include "tilt_model.h"
 
+#include "config.h"
+
 #define ENC_TILT  16
 #define ENC_PAN   12
 #define DIR_TILT  20
@@ -53,7 +55,7 @@ int main(int argc, char *argv[])
 
   int16_t x = 0, y = 0;
   double pan = 0, tilt = 0;
-  clock_t start = 0, end = 0, end_old = 0;
+  clock_t start = 0, end = 0, start_old = 0;
 
   int16_t enc_tilt_value;
   int16_t enc_pan_value;
@@ -110,8 +112,12 @@ int main(int argc, char *argv[])
 
   for(;;)
   {
-    // Start timer
-    start = clock();
+    // Period controller
+    do
+    {
+      // Read starting clock
+      start = clock();
+    }while(1000*(start-start_old)/CLOCKS_PER_SEC < PERIOD_MS);
 
     /* Image processing */
     // Load next frame
@@ -148,7 +154,7 @@ int main(int argc, char *argv[])
     tilt = getAngleVertical(-y+FRAME_HEIGHT/2);
 
     printf("VISION>\n");
-    printf("PAN>>dis=%+4d;  rad=%+2.2f\n", 
+    printf("PAN>>dis =%+4d; rad=%+2.2f\n", 
         x-FRAME_WIDTH/2, pan);
     printf("TILT>>dis=%+4d; rad=%+2.2f\n",
         -y+FRAME_HEIGHT/2, tilt);
@@ -222,11 +228,11 @@ int main(int argc, char *argv[])
     // Stop timer
     end = clock();
     printf("TIME>\n");
-    printf("process = %3.2f ms; period = %3.2f\n",
+    printf("process = %3.2f ms; period = %3.2f ms\n",
         (1000.0*(end-start))/CLOCKS_PER_SEC,
-        (1000.0*(end-end_old))/CLOCKS_PER_SEC
+        (1000.0*(start-start_old))/CLOCKS_PER_SEC
         );
-    end_old = end;
+    start_old = start;
 
 #ifndef ARCH
     setGPMCValue(fd, pwm_tilt_direction, DIR_TILT);

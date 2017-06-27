@@ -1,4 +1,5 @@
 #include "pan_model.h"
+#include "config.h"
 
 /* Variable arrays pan */
 XXDouble pan_C[0 + 1];    /* constants */
@@ -13,7 +14,7 @@ XXDouble pan_workarray[0 + 1];
 XXDouble pan_F[0 + 1];    /* favorite parameters */
 XXDouble pan_f[0 + 1];    /* favorite variables */
 
-XXDouble pan_step_size = 0.01;
+XXDouble pan_step_size = PERIOD_MS/1000;
 
 void PanModelInitialize (void)
 {
