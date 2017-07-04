@@ -129,6 +129,7 @@ int main(int argc, char *argv[])
       // Read starting clock
       start = clock();
     }while(1000*(start-start_old)/CLOCKS_PER_SEC < PERIOD_MS);
+    start_old = start;
 
     /* -IMAGE PROCESSING- */
     // Load next frame
@@ -246,15 +247,12 @@ int main(int argc, char *argv[])
         (1000.0*(end-start))/CLOCKS_PER_SEC,
         (1000.0*(start-start_old))/CLOCKS_PER_SEC
         );
-    start_old = start;
 
 #ifndef ARCH
     setGPMCValue(fd, pwm_tilt_direction, DIR_TILT);
     setGPMCValue(fd, pwm_tilt_duty_cycle, DUTY_TILT);
     setGPMCValue(fd, pwm_pan_direction, DIR_PAN);
     setGPMCValue(fd, pwm_pan_duty_cycle, DUTY_PAN);
-
-    usleep(1000);
 #else
     // Escape sequence
     char c=cvWaitKey(1);
