@@ -2,9 +2,7 @@
 #define __VISION_H
 
 #include <stdint.h>
-
-//#define ARCH
-//#define SHOW_GUI
+#include "config.h"
 
 #ifdef ARCH    // Must check in other platform
 #include <opencv2/core/fast_math.hpp>

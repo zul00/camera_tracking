@@ -5,12 +5,21 @@
 #include "vision.h"
 
 // HSV Filter value
+#ifdef ARCH
+int H_MIN = 24;
+int H_MAX = 72;
+int S_MIN = 41;
+int S_MAX = 120;
+int V_MIN = 153;
+int V_MAX = 235;
+#else
 int H_MIN = 28;
 int H_MAX = 84;
 int S_MIN = 106;
 int S_MAX = 195;
 int V_MIN = 92;
 int V_MAX = 183;
+#endif
 
 // Tracking Config
 #define MAX_NUM_OBJECTS  50
@@ -103,7 +112,7 @@ void morphOps(IplImage *in, IplImage *out)
 
   // Dilate image
   cvDilate(out, out, dilate_element, 2);
-  cvMorphologyEx(out, out, out, dilate_element, CV_MOP_CLOSE, 1);
+  //cvMorphologyEx(out, out, out, dilate_element, CV_MOP_CLOSE, 1);
 }
 
 /**

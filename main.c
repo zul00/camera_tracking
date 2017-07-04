@@ -58,7 +58,11 @@ double px2rad_ver(int pixels)
   return (double) atan2((pixels*tanDFOV), FRAME_HEIGHT/2);
 }
 
+#ifdef OVERO
 int main(int argc, char *argv[])
+#else
+int main(void)
+#endif
 {
   CvCapture **cap;   // Store camera
   IplImage *im, *imHSV, *imBin, *imMorph;  // store frame
@@ -66,7 +70,7 @@ int main(int argc, char *argv[])
 
   int16_t x = 0, y = 0;
   double pan_rad = 0, tilt_rad = 0;
-  clock_t start = 0, end = 0, start_old = 0;
+  clock_t start = 0, end = 0, start_old = 0, period = 0;
 
   int16_t enc_tilt_value;
   int16_t enc_pan_value;
@@ -93,7 +97,7 @@ int main(int argc, char *argv[])
     exit(-1);
   }
   // Open GPMC
-#ifndef ARCH
+#ifdef OVERO
   if (2 != argc)
   {
     printf("Usage: %s <device_name>\n", argv[0]);
@@ -129,6 +133,7 @@ int main(int argc, char *argv[])
       // Read starting clock
       start = clock();
     }while(1000*(start-start_old)/CLOCKS_PER_SEC < PERIOD_MS);
+    period = start - start_old;
     start_old = start;
 
     /* -IMAGE PROCESSING- */
@@ -172,9 +177,8 @@ int main(int argc, char *argv[])
     printf("TILT>>dis=%+4d; rad=%+2.2f\n",
         -y+FRAME_HEIGHT/2, tilt_rad);
 
-
     /* -FEEDBACK- */
-#ifndef ARCH
+#ifdef OVERO
     enc_tilt_value = getGPMCValue(fd, ENC_TILT);
     enc_pan_value = getGPMCValue(fd, ENC_PAN);
 #else
@@ -186,14 +190,15 @@ int main(int argc, char *argv[])
     pan_u[1] = enc_ctr2rad(enc_pan_value, ENC_PAN_PULSES_PER_ROTATION); 
     tilt_u[2] = enc_ctr2rad(enc_tilt_value, ENC_TILT_PULSES_PER_ROTATION); 
 
-    // Store rad
-    pan_u[0] = pan_u[1] + pan_rad;     // Update pan value input
-    tilt_u[1] = tilt_u[2] + tilt_rad;   // Update tilt value input
-
     printf("FEEDBACK>\n");
     printf ("RAD>>pan = %+1.2f; tilt = %+1.2f\n", pan_u[1], tilt_u[2]);
 
     /* -CONTROLLER- */
+    // Update setpoint
+    pan_u[0] = pan_u[1] + pan_rad;    // Use calculated angle from image 
+    tilt_u[1] = tilt_u[2] + tilt_rad; // processing as offset from current 
+                                      // angle as set point
+
     // Pan Controller calculations
     PanCopyInputsToVariables(pan_u);
     PanCalculateDynamic();
@@ -240,15 +245,7 @@ int main(int argc, char *argv[])
     printf("PAN>>duty  = %4u; dir = %d\n",
         pwm_pan_duty_cycle, pwm_pan_direction);
 
-    // Stop timer and measure time
-    end = clock();
-    printf("TIME>\n");
-    printf("process = %3.2f ms; period = %3.2f ms\n",
-        (1000.0*(end-start))/CLOCKS_PER_SEC,
-        (1000.0*(start-start_old))/CLOCKS_PER_SEC
-        );
-
-#ifndef ARCH
+#ifdef OVERO
     setGPMCValue(fd, pwm_tilt_direction, DIR_TILT);
     setGPMCValue(fd, pwm_tilt_duty_cycle, DUTY_TILT);
     setGPMCValue(fd, pwm_pan_direction, DIR_PAN);
@@ -259,6 +256,14 @@ int main(int argc, char *argv[])
     if(c==27)
       break;
 #endif
+
+    // Stop timer and measure time
+    end = clock();
+    printf("TIME>\n");
+    printf("process = %3.2f ms; period = %3.2f ms\n",
+        (1000.0*(end-start))/CLOCKS_PER_SEC,
+        (1000.0*(period))/CLOCKS_PER_SEC
+        );
   }
 
   // CleanUp
