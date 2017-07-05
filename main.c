@@ -31,23 +31,16 @@
 #define DIR_PAN   24
 #define DUTY_PAN  26
 
-#define ENC_PAN_PULSES_PER_ROTATION 4000
-#define ENC_TILT_PULSES_PER_ROTATION 900
 
 double enc_ctr2rad(long c, int16_t pulses_per_rotation);
 
-#define DFOH  0.91   // 52 deg
-#define DFOV  0.70   // 40 deg
-
-#define tanDFOH 0.4892  // tan(DFOH/2)
-#define tanDFOV 0.3650  // tan(DFOV/2)
 
 /**
  * @brief Change horizontal pixel distance to angle in radian
  */
 double px2rad_hor(int pixels)
 {
-  return (double) atan2((pixels*tanDFOH), FRAME_WIDTH/2);  
+  return (double) asin(2*(double)pixels/FRAME_WIDTH * sinHFOV2);
 }
 
 /**
@@ -55,7 +48,7 @@ double px2rad_hor(int pixels)
  */
 double px2rad_ver(int pixels)
 {
-  return (double) atan2((pixels*tanDFOV), FRAME_HEIGHT/2);
+  return (double) asin(2*(double)pixels/FRAME_HEIGHT * sinVFOV2);
 }
 
 #ifdef OVERO
@@ -92,7 +85,7 @@ int main(void)
   /* Initialize */
   // Initialize vision
   cap = malloc(sizeof(CvCapture*));
-  if (visionConfig(cap, 0) != 0)
+  if (visionConfig(cap, CAM_ID) != 0)
   {
     exit(-1);
   }
@@ -218,26 +211,24 @@ int main(void)
     if (pan_y[1] < 0)
     {
       pwm_pan_direction = 2;
-      pwm_pan_duty_cycle = (uint16_t) (-2500.0 * pan_y[1]);
+      pwm_pan_duty_cycle = (uint16_t) (-MAX_PWM_PAN * pan_y[1]);
     }
     else
     {
       pwm_pan_direction = 1;
-      pwm_pan_duty_cycle = (uint16_t) (2500.0 * pan_y[1]);
+      pwm_pan_duty_cycle = (uint16_t) (MAX_PWM_PAN * pan_y[1]);
     }
 
     if (tilt_y[0] < 0)
     {
       pwm_tilt_direction = 1;
-      pwm_tilt_duty_cycle = (uint16_t) (-2500.0 * tilt_y[0]);
+      pwm_tilt_duty_cycle = (uint16_t) (-MAX_PWM_TILT * tilt_y[0]);
     }
     else
     {
       pwm_tilt_direction = 2;
-      pwm_tilt_duty_cycle = (uint16_t) (2500.0 * tilt_y[0]);
+      pwm_tilt_duty_cycle = (uint16_t) (MAX_PWM_TILT * tilt_y[0]);
     }
-
-    pwm_tilt_duty_cycle = 0;
 
     printf("CONTROL>\n");
     printf("TILT>>duty = %4u; dir = %d\n",
@@ -251,10 +242,12 @@ int main(void)
     setGPMCValue(fd, pwm_pan_direction, DIR_PAN);
     setGPMCValue(fd, pwm_pan_duty_cycle, DUTY_PAN);
 #else
+#ifdef SHOW_GUI
     // Escape sequence
     char c=cvWaitKey(1);
     if(c==27)
       break;
+#endif
 #endif
 
     // Stop timer and measure time
