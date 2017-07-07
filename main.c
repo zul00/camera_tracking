@@ -64,6 +64,7 @@ int main(void)
   int16_t x = 0, y = 0;
   double pan_rad = 0, tilt_rad = 0;
   clock_t start = 0, end = 0, start_old = 0, period = 0;
+  clock_t period_im = 0;
 
   int16_t enc_tilt_value;
   int16_t enc_pan_value;
@@ -159,6 +160,7 @@ int main(void)
 
     // Track Object
     trackFilteredObject(&x,&y, imMorph, im);
+    period_im = clock() - start;
 
     // Convert distance to radian
     pan_rad  = px2rad_hor(x-FRAME_WIDTH/2);
@@ -253,9 +255,10 @@ int main(void)
     // Stop timer and measure time
     end = clock();
     printf("TIME>\n");
-    printf("process = %3.2f ms; period = %3.2f ms\n",
+    printf("process = %3.2f ms; period = %3.2f ms; image = %3.2f ms\n",
         (1000.0*(end-start))/CLOCKS_PER_SEC,
-        (1000.0*(period))/CLOCKS_PER_SEC
+        (1000.0*(period))/CLOCKS_PER_SEC,
+        (1000.0*(period_im))/CLOCKS_PER_SEC
         );
   }
 

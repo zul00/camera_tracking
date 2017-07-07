@@ -2,23 +2,23 @@
 #define __CONFIG_H
 
 /* Compilation config */
-#define ARCH
+//#define ARCH
 //#define DEBIAN
-//#define OVERO
+#define OVERO
 
 #ifndef OVERO
-#define SHOW_GUI
+//#define SHOW_GUI
 #endif
 
 /* System config */
 // PWM
 #define MAX_PWM_PAN   2500.0
-#define MAX_PWM_TILT  2500.0
+#define MAX_PWM_TILT  1250.0
 // Encoder
-#define ENC_PAN_PULSES_PER_ROTATION 4000
+#define ENC_PAN_PULSES_PER_ROTATION 5000
 #define ENC_TILT_PULSES_PER_ROTATION 900
 // Vision
-#define CAM_ID  1
+#define CAM_ID  0
 
 // https://www.learnopencv.com/approximate-focal-length-for-webcams-and-cell-phone-cameras/
 // http://support.logitech.com/en_us/product/webcam-c250/specs
@@ -28,6 +28,6 @@
 #define sinHFOV2  0.4394  // sin(HFOV/2)
 #define sinVFOV2  0.3429  // sin(VFOV/2)
 
-#define PERIOD_MS   10.0
+#define PERIOD_MS   13.0
 
 #endif
